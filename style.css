@@ -1,0 +1,866 @@
+/* =====================================================
+   VARIABLES Y RESET
+===================================================== */
+:root {
+    --fondo:          #14120f;
+    --fondo-panel:    #1c1a16;
+    --fondo-input:    #232018;
+    --borde:          #3a352c;
+    --borde-suave:    #2a2620;
+    --acento:         #c8a96e;
+    --acento-hover:   #dfc08a;
+    --texto:          #e8dfd0;
+    --texto-muted:    #8a7f70;
+    --danger:         #c0392b;
+    --danger-hover:   #e74c3c;
+    --radio:          8px;
+    --radio-lg:       14px;
+    --fuente-display: 'Playfair Display', Georgia, serif;
+    --fuente-cuerpo:  'DM Sans', system-ui, sans-serif;
+    --sombra:         0 4px 24px rgba(0,0,0,0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--fuente-cuerpo);
+    background-color: var(--fondo);
+    background-image:
+        linear-gradient(90deg, rgba(28,26,22,0.4) 1px, transparent 1px),
+        linear-gradient(rgba(28,26,22,0.4) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--texto);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px 10px 60px;
+}
+
+/* =====================================================
+   CONTENEDOR PRINCIPAL (pasta del cuaderno)
+===================================================== */
+.container {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 3.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: var(--fondo-panel);
+    background-image: radial-gradient(rgba(200,169,110,0.03) 1px, transparent 0);
+    background-size: 4px 4px;
+    border: 3px double var(--borde);
+    border-radius: 16px 24px 24px 16px;
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.6),
+        inset -10px 0 20px rgba(0,0,0,0.4),
+        5px 5px 0px #0b0a08;
+    position: relative;
+}
+
+/* Lomo del cuaderno */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 25px; height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, transparent 100%);
+    border-right: 1px dashed rgba(200,169,110,0.15);
+    border-radius: 16px 0 0 16px;
+    pointer-events: none;
+}
+
+/* =====================================================
+   CABECERA
+===================================================== */
+.cabecera {
+    text-align: center;
+    border-bottom: 1px dashed var(--borde);
+    padding-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cabecera img {
+    align-self: center;
+    width: 50px;
+}
+
+.cabecera h1 {
+    font-family: var(--fuente-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--acento);
+    letter-spacing: 0.03em;
+    text-shadow: -1px -1px 1px rgba(0,0,0,0.65), 1px 1px 1px rgba(255,255,255,0.07);
+}
+
+.cabecera h2 {
+    font-family: var(--fuente-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--texto);
+    letter-spacing: 0.05em;
+}
+
+.cabecera p {
+    font-size: 0.85rem;
+    color: var(--texto-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   INPUT TÍTULO
+===================================================== */
+#titulo {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    background: #fcf8f2;
+    border: 1px solid #d4c9b0;
+    border-left: 4px solid var(--acento);
+    border-radius: 4px;
+    color: #2a2520;
+    font-family: var(--fuente-display);
+    font-size: 1rem;
+    font-weight: 700;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+#titulo::placeholder { color: #a49982; font-weight: 400; }
+#titulo:focus {
+    transform: translateY(-1px);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 4px 10px rgba(200,169,110,0.25);
+}
+
+/* =====================================================
+   BARRA DE ACCIONES
+===================================================== */
+.actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: rgba(0,0,0,0.15);
+    padding: 10px;
+    border-radius: var(--radio);
+    border: 1px solid var(--borde-suave);
+}
+
+.actions-bar button {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.55rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--borde);
+    cursor: pointer;
+    background: var(--fondo-input);
+    color: var(--texto-muted);
+    transition: all 0.18s ease;
+}
+.actions-bar button:hover {
+    background: var(--borde-suave);
+    color: var(--texto);
+    transform: translateY(-2px);
+}
+.actions-bar button:active { transform: scale(0.97); }
+
+.btn-guardar  { background: var(--acento) !important; color: #1c1a16 !important; border-color: var(--acento) !important; }
+.btn-guardar:hover  { background: var(--acento-hover) !important; }
+.btn-borrar   { border-color: var(--danger) !important; color: var(--danger) !important; }
+.btn-borrar:hover   { background: var(--danger) !important; color: #fff !important; }
+.btn-pdf      { border-color: #5b7fa6 !important; color: #5b7fa6 !important; }
+.btn-pdf:hover      { background: #5b7fa6 !important; color: #fff !important; }
+.btn-libro    { border-color: var(--acento) !important; color: var(--acento) !important; }
+.btn-libro:hover    { background: rgba(200,169,110,0.1) !important; }
+.btn-ingles   { background: #2a0e1a !important; border-color: #ff007f !important; color: #ff7fbf !important; }
+.btn-ingles:hover   { background: #ff007f !important; color: #fff !important; }
+
+/* =====================================================
+   INDICADOR DE AUTOGUARDADO
+===================================================== */
+.indicador-autoguardado {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    min-height: 1.2em;
+    text-align: right;
+    padding-right: 2px;
+    transition: color 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+.indicador-autoguardado:not(:empty) { opacity: 1; }
+.ag-esperando { color: #8a7f70; }
+.ag-guardado  { color: #5a9e6f; }
+.ag-error     { color: #c47f7f; }
+
+/* =====================================================
+   CKEDITOR ESTILOS
+===================================================== */
+.cke_chrome {
+    border: 1px solid #d4c9b0 !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.3),
+        0 0 0 4px #fcf8f2,
+        0 2px 0 4px #d4c9b0,
+        0 4px 0 4px #f5ebd5,
+        0 6px 0 4px #c8b89a !important;
+}
+.cke_top  { background: var(--fondo-input) !important; border-bottom: 1px solid var(--borde) !important; }
+.cke_bottom { background: var(--fondo-input) !important; border-top: 1px solid var(--borde) !important; }
+.cke_button_icon { filter: invert(1) brightness(1.5) !important; }
+.cke_combo_text { color: var(--texto) !important; }
+.cke_combo_button { background: var(--fondo-panel) !important; border: 1px solid var(--borde) !important; }
+.cke_button_off:hover { background: var(--borde-suave) !important; }
+.cke_button_on { background: var(--borde) !important; border: 1px solid var(--acento) !important; box-shadow: none !important; }
+.cke_button_on:hover { background: var(--fondo-input) !important; }
+.cke_combo_on .cke_combo_button { background: var(--borde) !important; border: 1px solid var(--acento) !important; }
+.cke_wysiwyg_frame, .cke_wysiwyg_div { background-color: #fcf8f2 !important; }
+
+/* =====================================================
+   SECCIÓN GUÍA DE INGLÉS
+===================================================== */
+.seccion-ingles {
+    display: none;
+    background: #18121e;
+    padding: 28px;
+    border-radius: 12px;
+    border: 2px solid #ff007f;
+    color: #fff;
+    animation: fadeIn 0.3s ease;
+}
+
+.seccion-ingles h2 {
+    font-family: var(--fuente-display);
+    font-size: 1.4rem;
+    color: #ff7fbf;
+    margin-bottom: 6px;
+}
+
+.seccion-ingles > p {
+    color: var(--texto-muted);
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+}
+
+.menu-ingles-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    background: #2a1a26;
+    color: #aaa;
+    border: 1px solid #444;
+    padding: 7px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    transition: all 0.18s;
+}
+.tab-btn.active, .tab-btn:hover { background: #ff007f; color: white; border-color: #ff007f; }
+
+.contenido-tab {
+    display: none;
+    background: #211626;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 4px solid #00ff7f;
+    animation: fadeIn 0.25s ease;
+}
+.contenido-tab.active { display: block; }
+.contenido-tab h3 { color: #ff7fbf; margin-bottom: 12px; font-family: var(--fuente-display); }
+.contenido-tab p, .contenido-tab li { font-size: 0.92rem; color: #ddd; margin-bottom: 8px; }
+.contenido-tab code { background: #3a1a30; color: #00ff7f; padding: 2px 6px; border-radius: 3px; font-size: 0.88rem; }
+.contenido-tab ul { padding-left: 20px; }
+
+.tabla-gramatica {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.88rem;
+}
+.tabla-gramatica th, .tabla-gramatica td {
+    border: 1px solid #444;
+    padding: 9px 12px;
+    text-align: left;
+}
+.tabla-gramatica th { background: #2d1a2a; color: #00ff7f; }
+.tabla-gramatica td { background: #1a1020; color: #ddd; }
+.tabla-gramatica tr:hover td { background: #251530; }
+
+.ejercicio-item {
+    margin-bottom: 14px;
+    background: #261630;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #ddd;
+    border-left: 3px solid #ff007f;
+}
+.ejercicio-item input[type="text"] {
+    background: #111;
+    border: 1px solid #555;
+    color: #00ff7f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    width: 140px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    transition: border-color 0.18s;
+}
+.ejercicio-item input[type="text"]:focus { border-color: #00ff7f; outline: none; }
+.ejercicio-item input.correcto { border-color: #00ff7f !important; background: #0a1f0a !important; }
+.ejercicio-item input.incorrecto { border-color: #ff4444 !important; background: #1f0a0a !important; }
+
+/* =====================================================
+   SECCIÓN LIBRO — CUADERNO ESPIRAL
+===================================================== */
+.seccion-libro {
+    display: none;
+    padding-top: 2rem;
+    border-top: 2px dashed var(--borde);
+    animation: fadeIn 0.4s ease;
+}
+
+.seccion-libro > h3 {
+    text-align: center;
+    font-family: var(--fuente-display);
+    font-size: 1.3rem;
+    color: var(--acento);
+    margin-bottom: 0.4rem;
+}
+
+.libro-subtitulo {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--texto-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+
+.cuaderno-escena {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1rem 0 2.5rem;
+    perspective: 1400px;
+}
+
+.cuaderno-cuerpo {
+    position: relative;
+    width: 480px;
+    height: 560px;
+}
+
+.cuaderno-tapa-trasera {
+    position: absolute;
+    inset: 0;
+    background: #1a140c;
+    border-radius: 4px 16px 16px 4px;
+    border: 2px solid #3a2e1e;
+    box-shadow: 6px 6px 0 #0a0806, 10px 10px 20px rgba(0,0,0,0.6);
+    z-index: 1;
+}
+
+.cuaderno-paginas {
+    position: absolute;
+    top: 10px; bottom: 10px;
+    left: 28px; right: 10px;
+    background: #f8f2e8;
+    border-radius: 2px 12px 12px 2px;
+    z-index: 2;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.4s;
+}
+
+.cuaderno-paginas.visible { opacity: 1; }
+
+.cuaderno-paginas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(#d8cdb8 1px, transparent 1px);
+    background-size: 100% 28px;
+    background-position: 0 48px;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.cuaderno-paginas::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 44px;
+    width: 1.5px; height: 100%;
+    background: #ffb3b3;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.pagina-contenido {
+    position: absolute;
+    top: 18px; left: 58px; right: 18px; bottom: 18px;
+    overflow: hidden;
+    z-index: 3;
+}
+
+.pagina-titulo {
+    font-family: var(--fuente-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #3a2e22;
+    border-bottom: 1px dashed #c8b89a;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    line-height: 28px;
+}
+
+.pagina-cuerpo {
+    font-family: 'Georgia', serif;
+    font-size: 0.8rem;
+    line-height: 28px;
+    color: #1a2640;
+    word-break: break-word;
+    overflow-y: auto;
+    max-height: calc(100% - 50px);
+    padding-right: 6px;
+}
+
+.pagina-cuerpo::-webkit-scrollbar { width: 3px; }
+.pagina-cuerpo::-webkit-scrollbar-thumb { background: #c8b89a; border-radius: 2px; }
+.pagina-cuerpo p { margin-bottom: 0; }
+.pagina-cuerpo h1, .pagina-cuerpo h2, .pagina-cuerpo h3 {
+    font-family: var(--fuente-display);
+    margin: 6px 0 2px;
+    line-height: 28px;
+    color: #2a2218;
+}
+.pagina-cuerpo table { width: 100% !important; table-layout: fixed; font-size: 0.75rem; }
+
+.pagina-numero {
+    position: absolute;
+    bottom: 10px;
+    right: 18px;
+    font-size: 0.72rem;
+    color: #a49982;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    z-index: 4;
+}
+
+.cuaderno-tapa-front {
+    position: absolute;
+    inset: 0;
+    background: #2c2318;
+    border-radius: 4px 16px 16px 4px;
+    border: 2px solid #5a4530;
+    z-index: 10;
+    transform-origin: left center;
+    transform: rotateY(0deg);
+    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.4);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    user-select: none;
+}
+
+.cuaderno-tapa-front.abierta {
+    transform: rotateY(-168deg);
+    box-shadow: none;
+    cursor: default;
+}
+
+.tapa-lomo {
+    position: absolute;
+    top: 0; left: 0;
+    width: 24px; height: 100%;
+    background: linear-gradient(to right, #1a1008 0%, #2c2318 100%);
+    border-right: 1px dashed rgba(200,169,110,0.15);
+    border-radius: 4px 0 0 4px;
+}
+
+.tapa-titulo {
+    font-family: var(--fuente-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--acento);
+    text-align: center;
+    padding: 0 2rem;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+}
+
+.tapa-linea {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--acento), transparent);
+}
+
+.tapa-subtitulo {
+    font-size: 0.72rem;
+    color: var(--texto-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.tapa-hint {
+    position: absolute;
+    bottom: 16px;
+    font-size: 0.68rem;
+    color: rgba(200,169,110,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+}
+.cuaderno-tapa-front:hover .tapa-hint { color: rgba(200,169,110,0.8); }
+
+.cuaderno-espiral {
+    position: absolute;
+    top: 0; left: 14px;
+    width: 28px;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.libro-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.5s;
+}
+
+.libro-nav.visible { opacity: 1; }
+
+.nav-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--borde);
+    background: var(--fondo-input);
+    color: var(--acento);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+    line-height: 1;
+}
+.nav-btn:hover { background: var(--borde-suave); border-color: var(--acento); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+.nav-info {
+    font-family: var(--fuente-display);
+    font-size: 0.85rem;
+    color: var(--texto-muted);
+    min-width: 90px;
+    text-align: center;
+    font-style: italic;
+}
+
+.nav-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.nav-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--borde);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    border: none;
+    padding: 0;
+}
+.nav-dot.activo {
+    background: var(--acento);
+    transform: scale(1.35);
+}
+
+.btn-toggle-cuaderno {
+    display: block;
+    margin: 0 auto 1.5rem;
+    padding: 0.6rem 1.6rem;
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: var(--radio);
+    border: 1px solid var(--acento);
+    background: transparent;
+    color: var(--acento);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-toggle-cuaderno:hover { background: rgba(200,169,110,0.1); }
+.btn-toggle-cuaderno.abierto { background: var(--acento); color: #1c1a16; }
+.btn-toggle-cuaderno.abierto:hover { background: var(--acento-hover); }
+
+/* =====================================================
+   BOTÓN CERRAR GENÉRICO
+===================================================== */
+.btn-cerrar {
+    margin-top: 1.2rem;
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+    background: var(--fondo-panel);
+    color: var(--texto-muted);
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+}
+.btn-cerrar:hover { background: var(--fondo-input); color: var(--texto); }
+
+/* =====================================================
+   MODAL LISTA DE NOTAS
+===================================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+}
+.modal-overlay.abierto { display: flex; }
+
+.modal-box {
+    background: var(--fondo-panel);
+    border: 2px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 2rem;
+    width: 90%;
+    max-width: 480px;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: var(--sombra);
+}
+
+.modal-box h3 {
+    font-family: var(--fuente-display);
+    color: var(--acento);
+    font-size: 1.2rem;
+}
+
+.lista-notas {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.nota-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--fondo-input);
+    border: 1px solid var(--borde-suave);
+    border-radius: var(--radio);
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.88rem;
+}
+.nota-item:hover { border-color: var(--acento); background: var(--borde-suave); }
+.nota-item span { color: var(--texto); flex: 1; }
+.nota-item .nota-borrar {
+    color: var(--danger);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background 0.15s;
+}
+.nota-item .nota-borrar:hover { background: rgba(192,57,43,0.15); }
+
+.modal-vacio {
+    color: var(--texto-muted);
+    text-align: center;
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* =====================================================
+   DIÁLOGO DE CONFIRMACIÓN
+===================================================== */
+.dialogo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.dialogo-overlay.visible { opacity: 1; }
+
+.dialogo-box {
+    background: var(--fondo-panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 1.8rem 2rem;
+    width: 90%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: var(--sombra);
+    transform: translateY(6px);
+    transition: transform 0.2s ease;
+}
+
+.dialogo-overlay.visible .dialogo-box { transform: translateY(0); }
+
+.dialogo-titulo {
+    font-family: var(--fuente-display);
+    font-size: 1rem;
+    color: var(--texto);
+    font-weight: 700;
+}
+
+.dialogo-sub {
+    font-size: 0.82rem;
+    color: var(--texto-muted);
+    margin-bottom: 0.8rem;
+}
+
+.dialogo-acciones {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+}
+
+.dialogo-cancelar,
+.dialogo-confirmar {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radio);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid var(--borde);
+}
+
+.dialogo-cancelar {
+    background: var(--fondo-input);
+    color: var(--texto-muted);
+}
+.dialogo-cancelar:hover {
+    background: var(--borde-suave);
+    color: var(--texto);
+}
+
+.dialogo-confirmar {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}
+.dialogo-confirmar:hover {
+    background: var(--danger-hover);
+    border-color: var(--danger-hover);
+}
+
+/* =====================================================
+   SISTEMA DE TOASTS
+===================================================== */
+#toast-container {
+    position: fixed;
+    bottom: 1.75rem;
+    right: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--radio);
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.88rem;
+    max-width: 300px;
+    border: 1px solid transparent;
+    animation: toast-entrar 0.28s ease forwards;
+}
+.toast-exito  { background: #1a2e1a; border-color: #2d5a2d; color: #7fbf7f; }
+.toast-error  { background: #2e1a1a; border-color: #5a2d2d; color: #c47f7f; }
+.toast-info   { background: #1a2230; border-color: #2d3f5a; color: #7fa0c4; }
+.toast-saliendo { animation: toast-salir 0.28s ease forwards; }
+
+@keyframes toast-entrar {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+@keyframes toast-salir {
+    from { opacity: 1; transform: translateY(0)    scale(1);    }
+    to   { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   SCROLLBARS
+===================================================== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--fondo); }
+::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--texto-muted); }
+.contenido-hoja::-webkit-scrollbar { width: 4px; }
+.contenido-hoja::-webkit-scrollbar-thumb { background: #cbd4c2; border-radius: 2px; }
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 600px) {
+    .container { padding: 2.5rem 1.2rem 4rem; margin: 1rem auto; border-radius: 12px; }
+    .cabecera h1 { font-size: 1.1rem; }
+    .cabecera h2 { font-size: 1.2rem; }
+    .actions-bar button { font-size: 0.72rem; padding: 0.45rem 0.7rem; }
+    #toast-container { right: 1rem; bottom: 1rem; left: 1rem; }
+    .toast { max-width: 100%; }
+    .menu-ingles-tabs { gap: 5px; }
+}

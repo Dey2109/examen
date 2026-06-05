@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuaderno Digital — INFRAMEN</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ======= CONTENEDOR PRINCIPAL ======= -->
+    <div class="container">
+
+        <!-- Cabecera -->
+        <div class="cabecera">
+            <img src="image/logo-in.png" alt="">
+            <h1>Instituto Nacional "General Francisco Menéndez" — INFRAMEN 🦂</h1>
+            <h2>Cuaderno Digital de: <em>David Reyes</em></h2>
+            <p>Sección 1-2 · Desarrollo de Software</p>
+        </div>
+
+        <!-- Título de la hoja -->
+        <input type="text" id="titulo" placeholder="Título de la hoja...">
+
+        <!-- Barra de acciones -->
+        <div class="actions-bar">
+            <button class="btn-guardar" onclick="guardarNota()">💾 Guardar</button>
+            <button class="btn-cargar"  onclick="cargarNota()">📂 Cargar</button>
+            <button class="btn-listar"  onclick="abrirModalNotas()">📋 Ver Notas</button>
+            <button class="btn-borrar"  onclick="eliminarNota()">🗑 Borrar</button>
+            <button class="btn-pdf"     onclick="generarPDF()">📄 PDF</button>
+            <button class="btn-libro"   onclick="abrirLibro()">📖 Ver Libro</button>
+            <button class="btn-ingles"  onclick="toggleIngles()">🇬🇧 Guía Inglés</button>
+            <a href="cuestionario/index.html">
+                <button class="btn-cuestionario" style="background-color: #4a90e2; color: white;">❓ Cuestionario</button>
+            </a>
+        </div>
+
+        <!-- Indicador de autoguardado -->
+        <div id="indicador-autoguardado" class="indicador-autoguardado"></div>
+
+        <!-- Editor CKEditor -->
+        <textarea id="editor"></textarea>
+
+        <!-- ======= SECCIÓN: GUÍA DE INGLÉS ======= -->
+        <div class="seccion-ingles" id="seccion-ingles">
+            <h2>📝 Unit 1: The Verb "To Be" (Ser o Estar)</h2>
+            <p>Guía de estudio interactiva — Sección 1-2 Desarrollo de Software</p>
+
+            <div class="menu-ingles-tabs">
+                <button class="tab-btn active" onclick="cambiarTab(event,'tab-presente')">Presente (Am/Is/Are)</button>
+                <button class="tab-btn"        onclick="cambiarTab(event,'tab-pasado')">Pasado (Was/Were)</button>
+                <button class="tab-btn"        onclick="cambiarTab(event,'tab-futuro')">Futuro (Will be)</button>
+                <button class="tab-btn"        onclick="cambiarTab(event,'tab-ejercicios')">✏️ Ejercicios</button>
+            </div>
+
+            <!-- Pestaña: Presente -->
+            <div id="tab-presente" class="contenido-tab active">
+                <h3>Tiempo Presente: AM, IS, ARE</h3>
+                <table class="tabla-gramatica">
+                    <thead>
+                        <tr><th>Singular</th><th>Traducción</th><th>Plural</th><th>Traducción</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>I am</td><td>Yo soy / estoy</td><td>We are</td><td>Nosotros somos / estamos</td></tr>
+                        <tr><td>You are</td><td>Tú eres / estás</td><td>You are</td><td>Uds. son / están</td></tr>
+                        <tr><td>He / She / It is</td><td>Él / Ella es / está</td><td>They are</td><td>Ellos son / están</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Negativo:</strong> Se añade <code>not</code> → <em>isn't / aren't</em></p>
+                <p><strong>Interrogativo:</strong> Se invierte el orden → <em>Am I? / Are you? / Is he?</em></p>
+            </div>
+
+            <!-- Pestaña: Pasado -->
+            <div id="tab-pasado" class="contenido-tab">
+                <h3>Tiempo Pasado: WAS, WERE</h3>
+                <table class="tabla-gramatica">
+                    <thead>
+                        <tr><th>WAS (I, He, She, It)</th><th>WERE (You, We, They)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>I was — <em>Yo era / estaba</em></td><td>We were — <em>Nosotros éramos</em></td></tr>
+                        <tr><td>He/She/It was — <em>Él/Ella era</em></td><td>They were — <em>Ellos eran</em></td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Negativo:</strong> <code>wasn't</code> o <code>weren't</code></p>
+                <p><strong>Interrogativo:</strong> <em>Was I? / Were you?</em></p>
+            </div>
+
+            <!-- Pestaña: Futuro -->
+            <div id="tab-futuro" class="contenido-tab">
+                <h3>Tiempo Futuro: WILL BE</h3>
+                <p>Para todos los pronombres se usa <code>will be</code> o su contracción <code>'ll be</code>.</p>
+                <ul>
+                    <li><strong>I will be / I'll be</strong> — Yo seré / estaré</li>
+                    <li><strong>You will be</strong> — Tú serás / estarás</li>
+                    <li><strong>It will be hot tomorrow</strong> — Estará caluroso mañana</li>
+                </ul>
+                <p><strong>Negativo:</strong> <code>won't be</code> (will not be)</p>
+            </div>
+
+            <!-- Pestaña: Ejercicios -->
+            <div id="tab-ejercicios" class="contenido-tab">
+                <h3>✏️ Práctica Interactiva</h3>
+                <p>Completa con la forma correcta del verbo To Be:</p>
+                <div class="ejercicio-item">
+                    <label>1. The teacher <input type="text" id="ex1" placeholder="am/is/are"> in the classroom now.</label>
+                </div>
+                <div class="ejercicio-item">
+                    <label>2. John and Mary <input type="text" id="ex2" placeholder="am/is/are"> good friends.</label>
+                </div>
+                <div class="ejercicio-item">
+                    <label>3. The men <input type="text" id="ex3" placeholder="am/is/are"> tired.</label>
+                </div>
+                <div class="ejercicio-item">
+                    <label>4. Yesterday <input type="text" id="ex4" placeholder="was/were"> Sunday.</label>
+                </div>
+                <div class="ejercicio-item">
+                    <label>5. He is not here today, but he <input type="text" id="ex5" placeholder="will be / was"> here tomorrow.</label>
+                </div>
+                <br>
+                <button onclick="verificarRespuestas()" style="background:#00ff7f;color:#111;border:none;padding:9px 20px;border-radius:5px;font-weight:700;cursor:pointer;font-size:0.85rem;">
+                    ✅ Verificar respuestas
+                </button>
+            </div>
+
+            <br>
+            <button class="btn-cerrar" onclick="toggleIngles()">✕ Cerrar guía</button>
+        </div>
+
+        <!-- ======= SECCIÓN: LIBRO ESPIRAL ======= -->
+        <div class="seccion-libro" id="seccion-libro">
+            <h3>📖 Vista de Libro</h3>
+            <p class="libro-subtitulo">Haz clic en la portada para abrir el cuaderno</p>
+
+            <div class="cuaderno-escena">
+                <div class="cuaderno-cuerpo" id="cuaderno-cuerpo">
+
+                    <!-- Tapa trasera -->
+                    <div class="cuaderno-tapa-trasera"></div>
+
+                    <!-- Páginas interiores -->
+                    <div class="cuaderno-paginas" id="cuaderno-paginas">
+                        <div class="pagina-contenido">
+                            <div class="pagina-titulo" id="pagina-titulo">—</div>
+                            <div class="pagina-cuerpo"  id="pagina-cuerpo"></div>
+                        </div>
+                        <div class="pagina-numero" id="pagina-numero">1</div>
+                    </div>
+
+                    <!-- Espiral SVG -->
+                    <svg class="cuaderno-espiral" id="espiral-svg"
+                         viewBox="0 0 28 560" preserveAspectRatio="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                    </svg>
+
+                    <!-- Tapa delantera -->
+                    <div class="cuaderno-tapa-front" id="cuaderno-tapa" onclick="toggleTapa()">
+                        <div class="tapa-lomo"></div>
+                        <div class="tapa-linea"></div>
+                        <img src="logo-in.png" alt="logo" width="50px" height="50px">
+                        <div class="tapa-titulo" id="tapa-titulo">Cuaderno Digital<br>David Reyes</div>
+                        <div class="tapa-linea"></div>
+                        <div class="tapa-subtitulo">1-2 · Desarrollo de Software</div>
+                        <div class="tapa-hint">— clic para abrir —</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Navegación de páginas -->
+            <div class="libro-nav" id="libro-nav">
+                <button class="nav-btn" id="btn-prev" onclick="cambiarPaginaLibro(-1)">&#8592;</button>
+                <div class="nav-dots" id="nav-dots"></div>
+                <span class="nav-info" id="nav-info">Pág 1 / 1</span>
+                <button class="nav-btn" id="btn-next" onclick="cambiarPaginaLibro(1)">&#8594;</button>
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+                <button class="btn-toggle-cuaderno" id="btn-toggle-tapa" onclick="toggleTapa()">Abrir cuaderno</button>
+                <button class="btn-cerrar" onclick="cerrarLibro()">✕ Cerrar sección</button>
+            </div>
+        </div>
+
+    </div><!-- fin .container -->
+
+    <!-- ======= MODAL: LISTA DE NOTAS ======= -->
+    <div class="modal-overlay" id="modal-notas" onclick="cerrarModalSiFondo(event)">
+        <div class="modal-box">
+            <h3>📋 Notas guardadas</h3>
+            <div class="lista-notas" id="lista-notas-contenido"></div>
+            <button class="btn-cerrar" onclick="cerrarModalNotas()">✕ Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ======= TOAST CONTAINER ======= -->
+    <div id="toast-container"></div>
+papoy
+    <script src="script.js"></script>
+</body>
+</html>

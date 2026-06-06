@@ -179,6 +179,17 @@ body {
 .btn-ingles   { background: #2a0e1a !important; border-color: #ff007f !important; color: #ff7fbf !important; }
 .btn-ingles:hover   { background: #ff007f !important; color: #fff !important; }
 
+/* ── NUEVO: botón Cargar Archivo ── */
+.btn-upload {
+    border-color: #3a7a5a !important;
+    color: #5bbf92 !important;
+    background: #0e1f18 !important;
+}
+.btn-upload:hover {
+    background: #3a7a5a !important;
+    color: #fff !important;
+}
+
 /* =====================================================
    INDICADOR DE AUTOGUARDADO
 ===================================================== */
@@ -219,7 +230,7 @@ body {
 .cke_button_off:hover { background: var(--borde-suave) !important; }
 .cke_button_on { background: var(--borde) !important; border: 1px solid var(--acento) !important; box-shadow: none !important; }
 .cke_button_on:hover { background: var(--fondo-input) !important; }
-.cke_combo_on .cke_combo_button { background: var(--borde) !important; border: 1px solid var(--acento) !important; }
+.cke_combo_on .cke_combo_button { background: var(--borde) !important; border-color: var(--acento) !important; }
 .cke_wysiwyg_frame, .cke_wysiwyg_div { background-color: #fcf8f2 !important; }
 
 /* =====================================================
@@ -712,6 +723,125 @@ body {
 }
 
 /* =====================================================
+   MODAL DE ARCHIVO SUBIDO  (nuevo)
+===================================================== */
+.modal-archivo-box {
+    max-width: 620px;
+    max-height: 82vh;
+    gap: 0.8rem;
+}
+
+.modal-archivo-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px dashed var(--borde);
+}
+
+.modal-archivo-header span {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.modal-archivo-header h3 {
+    font-family: var(--fuente-display);
+    color: var(--acento);
+    font-size: 1.05rem;
+    word-break: break-all;
+}
+
+.modal-archivo-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-archivo-campo label {
+    font-size: 0.75rem;
+    color: var(--texto-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.modal-archivo-campo input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: #fcf8f2;
+    border: 1px solid #d4c9b0;
+    border-left: 4px solid #5bbf92;
+    border-radius: 4px;
+    color: #2a2520;
+    font-family: var(--fuente-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+}
+.modal-archivo-campo input:focus {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 3px rgba(91,191,146,0.2);
+}
+.modal-archivo-campo input::placeholder { color: #a49982; font-weight: 400; }
+
+.modal-archivo-preview {
+    flex: 1;
+    overflow-y: auto;
+    background: #fcf8f2;
+    border: 1px solid #d4c9b0;
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    font-family: Georgia, serif;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #2a2520;
+    max-height: 300px;
+    /* Pauta de cuaderno de fondo */
+    background-image: linear-gradient(#ddd 1px, transparent 1px);
+    background-size: 100% 28px;
+    background-position: 0 8px;
+}
+
+.modal-archivo-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.modal-archivo-preview::-webkit-scrollbar { width: 4px; }
+.modal-archivo-preview::-webkit-scrollbar-thumb {
+    background: #c8b89a;
+    border-radius: 2px;
+}
+
+.modal-archivo-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding-top: 0.8rem;
+    border-top: 1px dashed var(--borde);
+}
+
+.modal-archivo-footer .btn-cerrar { margin-top: 0; }
+
+.btn-guardar-archivo {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.3rem;
+    border-radius: var(--radio);
+    border: none;
+    background: #3a7a5a;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.1s;
+}
+.btn-guardar-archivo:hover { background: #2e6046; }
+.btn-guardar-archivo:active { transform: scale(0.97); }
+
+/* =====================================================
    DIÁLOGO DE CONFIRMACIÓN
 ===================================================== */
 .dialogo-overlay {
@@ -860,4 +990,5 @@ body {
     #toast-container { right: 1rem; bottom: 1rem; left: 1rem; }
     .toast { max-width: 100%; }
     .menu-ingles-tabs { gap: 5px; }
+    .modal-archivo-preview { max-height: 180px; }
 }

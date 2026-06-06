@@ -227,8 +227,6 @@ function cerrarModalSiFondo(e)    { if (e.target === document.getElementById('mo
 // ============================================================
 //  UTILIDADES PDF
 // ============================================================
-
-/** Sanitiza el título para usarlo como nombre de archivo. */
 function sanitizarNombreArchivo(nombre) {
     return nombre
         .replace(/[\/\\:*?"<>|]/g, '_')
@@ -237,7 +235,6 @@ function sanitizarNombreArchivo(nombre) {
         .trim() || 'Sin_Titulo';
 }
 
-/** Convierte <img> del elemento a base64 para que jsPDF las renderice. */
 async function convertirImagenesABase64(elemento) {
     const imgs = elemento.querySelectorAll('img');
     const promesas = Array.from(imgs).map(img => new Promise(resolve => {
@@ -330,9 +327,6 @@ function agregarPortada(doc, titulo) {
     doc.text(fecha, width / 2, height / 2 + 60, { align: 'center' });
 }
 
-// ============================================================
-//  METADATA DEL PDF
-// ============================================================
 function agregarMetadata(doc, titulo) {
     doc.setProperties({
         title:   titulo,
@@ -343,9 +337,6 @@ function agregarMetadata(doc, titulo) {
     });
 }
 
-// ============================================================
-//  PIE DE PÁGINA
-// ============================================================
 function agregarPieDePagina(doc, nombreArchivo) {
     const total = doc.getNumberOfPages();
     const fecha = new Date().toLocaleDateString('es-ES', { year:'numeric', month:'long', day:'numeric' });
@@ -363,9 +354,6 @@ function agregarPieDePagina(doc, nombreArchivo) {
         doc.text(`Pág. ${i} / ${total}`,    width - 40, height - 18, { align: 'right'  });
     }
 }
-
-// Nota: marca de agua eliminada — doc.GState({ opacity }) en jsPDF 2.5
-// corrompe el estado gráfico global y borra el contenido renderizado por doc.html().
 
 // ============================================================
 //  VISTA PREVIA ANTES DE DESCARGAR
@@ -444,7 +432,7 @@ function mostrarVistaPreviaPDF(pdfBlob, nombreArchivo, onDescargar) {
 }
 
 // ============================================================
-//  GENERAR PDF  —  función principal
+//  GENERAR PDF
 // ============================================================
 const generarPDF = async () => {
     const titulo    = document.getElementById('titulo').value.trim();
@@ -456,12 +444,10 @@ const generarPDF = async () => {
     const nombreArchivo = sanitizarNombreArchivo(titulo);
 
     try {
-        // jsPDF ya está cargado desde el <head> del HTML
         const { jsPDF } = window.jspdf;
 
         mostrarProgresoPDF(10, 'Preparando contenido…');
 
-        // Dimensiones A4 en pt
         const A4_W = 595, A4_H = 842;
         const MX = 45, MT = 50, MB = 62;
         const AREA_W = A4_W - MX * 2;
@@ -507,8 +493,6 @@ const generarPDF = async () => {
         const escala      = canvas.width / AREA_W;
         const alturaPagPx = AREA_H * escala;
 
-        // Recopilar los cortes naturales entre bloques del DOM (p, h1-h6, li, tr, div)
-        // para no partir una línea a la mitad. El elemento sigue en el DOM aquí.
         const cortesNaturales = [0];
         const elRect = el.getBoundingClientRect();
         const bloques = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, tr, div, img');
@@ -521,14 +505,11 @@ const generarPDF = async () => {
 
         document.body.removeChild(el);
 
-        // Calcular los puntos de corte reales buscando el corte natural
-        // más cercano (por arriba) a cada múltiplo de alturaPagPx
         const cortesPagina = [0];
         let paginaActual = 1;
         while (true) {
             const idealY = paginaActual * alturaPagPx;
             if (idealY >= canvas.height) break;
-            // Buscar el corte natural justo antes de idealY
             let mejorCorte = idealY;
             for (let j = cortesNaturales.length - 1; j >= 0; j--) {
                 if (cortesNaturales[j] <= idealY) {
@@ -536,8 +517,6 @@ const generarPDF = async () => {
                     break;
                 }
             }
-            // Si el corte natural está muy lejos del ideal (>20% de página),
-            // preferir el corte ideal para no generar páginas demasiado cortas
             if (idealY - mejorCorte > alturaPagPx * 0.20) mejorCorte = idealY;
             cortesPagina.push(Math.round(mejorCorte));
             paginaActual++;
@@ -553,7 +532,6 @@ const generarPDF = async () => {
             const srcH = cortesPagina[i + 1] - srcY;
             if (srcH <= 0) continue;
 
-            // Dibujar el trozo en un canvas del tamaño exacto de una página
             const trozo = document.createElement('canvas');
             trozo.width  = canvas.width;
             trozo.height = Math.ceil(alturaPagPx);
@@ -751,4 +729,237 @@ function verificarRespuestas() {
     } else {
         mostrarToast(`✏️ ${correctas}/${respuestas.length} correctas. ¡Revisa las marcadas en rojo!`, 'error', 4000);
     }
+}
+
+// ============================================================
+//  CARGA DE ARCHIVOS — ESTADO GLOBAL
+// ============================================================
+let _archivoHTMLPendiente = '';   // contenido HTML listo para insertar
+let _archivoNombrePendiente = ''; // nombre sugerido para el título
+
+// ============================================================
+//  PUNTO DE ENTRADA: el usuario elige un archivo
+// ============================================================
+async function manejarArchivoSubido(inputEl) {
+    const archivo = inputEl.files[0];
+    if (!archivo) return;
+
+    // Limpiar el input para permitir volver a subir el mismo archivo
+    inputEl.value = '';
+
+    const nombre = archivo.name;
+    const ext    = nombre.split('.').pop().toLowerCase();
+    const titulo = nombre.replace(/\.[^/.]+$/, ''); // nombre sin extensión
+
+    mostrarToast('⏳ Procesando archivo...', 'info', 2000);
+
+    try {
+        let htmlResultado = '';
+        let icono = '📄';
+        let tipoDesc = '';
+
+        // ── PDF ──────────────────────────────────────────────
+        if (ext === 'pdf') {
+            icono = '📕';
+            tipoDesc = 'Documento PDF';
+            htmlResultado = await leerPDF(archivo);
+        }
+        // ── DOCX / DOC ───────────────────────────────────────
+        else if (ext === 'docx' || ext === 'doc') {
+            icono = '📘';
+            tipoDesc = 'Documento Word';
+            htmlResultado = await leerDOCX(archivo);
+        }
+        // ── IMÁGENES ─────────────────────────────────────────
+        else if (['png','jpg','jpeg','gif','webp','bmp','svg'].includes(ext)) {
+            icono = '🖼️';
+            tipoDesc = 'Imagen';
+            htmlResultado = await leerImagen(archivo);
+        }
+        // ── TEXTO / MARKDOWN ─────────────────────────────────
+        else if (['txt','md'].includes(ext)) {
+            icono = '📝';
+            tipoDesc = 'Archivo de texto';
+            htmlResultado = await leerTexto(archivo);
+        }
+        else {
+            mostrarToast(`❌ Tipo de archivo ".${ext}" no soportado.`, 'error');
+            return;
+        }
+
+        // Guardar en estado global y abrir modal de previsualización
+        _archivoHTMLPendiente   = htmlResultado;
+        _archivoNombrePendiente = titulo;
+        abrirModalArchivo(icono, nombre, tipoDesc, htmlResultado, titulo);
+
+    } catch (err) {
+        console.error('[manejarArchivoSubido]', err);
+        mostrarToast('❌ Error al procesar el archivo. Revisa la consola.', 'error');
+    }
+}
+
+// ============================================================
+//  LECTORES POR TIPO
+// ============================================================
+
+/** Lee un PDF página a página con PDF.js y devuelve HTML con el texto. */
+async function leerPDF(archivo) {
+    // Configurar worker de PDF.js
+    if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js no cargado');
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const arrayBuffer = await archivo.arrayBuffer();
+    const pdf         = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let html = '';
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+        const page    = await pdf.getPage(i);
+        const content = await page.getTextContent();
+
+        // Agrupar items en líneas usando su posición Y
+        const lineas = {};
+        content.items.forEach(item => {
+            const y = Math.round(item.transform[5]);
+            if (!lineas[y]) lineas[y] = [];
+            lineas[y].push(item.str);
+        });
+
+        const yKeys = Object.keys(lineas).map(Number).sort((a, b) => b - a);
+
+        html += `<p><strong style="color:#8b6914;">— Página ${i} —</strong></p>`;
+        yKeys.forEach(y => {
+            const linea = lineas[y].join(' ').trim();
+            if (linea) html += `<p>${escaparHTML(linea)}</p>`;
+        });
+
+        if (i < pdf.numPages) html += '<hr style="border:none;border-top:1px dashed #d4c9b0;margin:12px 0;">';
+    }
+
+    return html || '<p><em>(El PDF no contiene texto extraíble — puede ser un PDF escaneado.)</em></p>';
+}
+
+/** Lee un DOCX con Mammoth y devuelve el HTML generado. */
+async function leerDOCX(archivo) {
+    if (typeof mammoth === 'undefined') throw new Error('Mammoth.js no cargado');
+    const arrayBuffer = await archivo.arrayBuffer();
+    const resultado   = await mammoth.convertToHtml({ arrayBuffer });
+    return resultado.value || '<p><em>(No se pudo extraer contenido del documento.)</em></p>';
+}
+
+/** Lee una imagen y la embebe como <img> en base64. */
+async function leerImagen(archivo) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = e => {
+            const src  = e.target.result;
+            const html = `<p style="text-align:center;">
+                            <img src="${src}"
+                                 alt="${escaparHTML(archivo.name)}"
+                                 style="max-width:100%;height:auto;border-radius:4px;
+                                        box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+                          </p>`;
+            resolve(html);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(archivo);
+    });
+}
+
+/** Lee un archivo de texto plano o Markdown y lo convierte a párrafos HTML. */
+async function leerTexto(archivo) {
+    const texto = await archivo.text();
+    const lineas = texto.split('\n');
+    let html = '';
+    lineas.forEach(linea => {
+        const l = linea.trim();
+        if (!l) {
+            html += '<br>';
+        } else if (l.startsWith('# ')) {
+            html += `<h1>${escaparHTML(l.slice(2))}</h1>`;
+        } else if (l.startsWith('## ')) {
+            html += `<h2>${escaparHTML(l.slice(3))}</h2>`;
+        } else if (l.startsWith('### ')) {
+            html += `<h3>${escaparHTML(l.slice(4))}</h3>`;
+        } else {
+            html += `<p>${escaparHTML(l)}</p>`;
+        }
+    });
+    return html;
+}
+
+// ============================================================
+//  MODAL DE PREVISUALIZACIÓN DEL ARCHIVO
+// ============================================================
+function abrirModalArchivo(icono, nombre, tipoDesc, htmlContenido, tituloSugerido) {
+    document.getElementById('modal-archivo-icono').textContent   = icono;
+    document.getElementById('modal-archivo-nombre').textContent  = nombre;
+    document.getElementById('modal-archivo-tipo').textContent    = tipoDesc;
+    document.getElementById('modal-titulo-input').value          = tituloSugerido;
+
+    // Previsualización del contenido
+    const preview = document.getElementById('modal-archivo-preview');
+    preview.innerHTML = htmlContenido;
+
+    document.getElementById('modal-archivo').classList.add('abierto');
+}
+
+function cerrarModalArchivo() {
+    document.getElementById('modal-archivo').classList.remove('abierto');
+    _archivoHTMLPendiente   = '';
+    _archivoNombrePendiente = '';
+}
+
+function cerrarModalArchivSiFondo(e) {
+    if (e.target === document.getElementById('modal-archivo')) cerrarModalArchivo();
+}
+
+/** Toma el HTML procesado, lo pone en el editor y lo guarda automáticamente. */
+function insertarArchivoEnEditor() {
+    const tituloIngresado = document.getElementById('modal-titulo-input').value.trim();
+
+    if (!tituloIngresado) {
+        mostrarToast('⚠️ Escribe un título para la hoja.', 'error');
+        document.getElementById('modal-titulo-input').focus();
+        return;
+    }
+
+    if (!_archivoHTMLPendiente) {
+        mostrarToast('❌ No hay contenido para insertar.', 'error');
+        return;
+    }
+
+    // Poner título en el campo principal
+    document.getElementById('titulo').value = tituloIngresado;
+
+    // Insertar contenido en CKEditor
+    CKEDITOR.instances.editor.setData(_archivoHTMLPendiente);
+
+    // Guardar como nota en localStorage
+    try {
+        localStorage.setItem('nota__' + tituloIngresado, _archivoHTMLPendiente);
+        ultimoTituloAutoguardado    = tituloIngresado;
+        ultimoContenidoAutoguardado = _archivoHTMLPendiente;
+        clearTimeout(autoguardadoTimer);
+        actualizarIndicador('guardado');
+        mostrarToast(`✅ "${tituloIngresado}" importada y guardada.`, 'exito', 3500);
+    } catch(e) {
+        mostrarToast('⚠️ Contenido insertado pero no guardado (almacenamiento lleno).', 'error');
+    }
+
+    cerrarModalArchivo();
+
+    // Hacer scroll al editor
+    document.getElementById('titulo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ============================================================
+//  UTILIDAD
+// ============================================================
+function escaparHTML(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }

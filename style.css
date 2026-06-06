@@ -34,6 +34,119 @@ body {
     padding: 20px 10px 60px;
 }
 
+
+/* =====================================================
+   HEADER GLOBAL SUPERIOR (Consola HUD Flotante)
+===================================================== */
+.header-global-cyber {
+    width: 100%;
+    max-width: 860px; /* Alineado exactamente con tu .container */
+    margin: 0 auto 1rem auto;
+    padding: 12px 20px;
+    background: rgba(10, 16, 36, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-bottom: 2px solid var(--acento, #00f0ff);
+    border-radius: var(--radio, 4px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.header-grid-cyber {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Identidad de la marca de desarrollo */
+.brand-cyber {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--fuente-display, 'Orbitron'), sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--acento, #00f0ff);
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.icono-matriz {
+    color: #fff;
+    animation: pulseIcono 2s infinite ease-in-out;
+}
+
+/* Conector central estético sci-fi */
+.linea-conexion {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.3), transparent, rgba(0, 240, 255, 0.3));
+    position: relative;
+}
+
+.linea-conexion::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: 50%;
+    width: 5px; height: 5px;
+    background: var(--acento, #00f0ff);
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px var(--acento, #00f0ff);
+}
+
+/* Sección de telemetría derecha */
+.status-cyber {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-family: var(--fuente-cuerpo, 'Share Tech Mono'), monospace;
+    font-size: 0.75rem;
+}
+
+.terminal-id {
+    color: var(--texto-muted, #638596);
+    letter-spacing: 1px;
+}
+
+.indicador-red {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 255, 170, 0.05);
+    border: 1px solid rgba(0, 255, 170, 0.2);
+    padding: 3px 8px;
+    border-radius: 2px;
+}
+
+.status-text {
+    color: #00ffaa;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(0, 255, 170, 0.3);
+}
+
+.pulso-online {
+    width: 5px;
+    height: 5px;
+    background-color: #00ffaa;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #00ffaa;
+    animation: blinkLed 1.2s infinite;
+}
+
+/* =====================================================
+   ANIMACIONES DE LA BARRA SUPERIOR
+===================================================== */
+@keyframes blinkLed {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes pulseIcono {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; color: var(--acento, #00f0ff); }
+}
 /* =====================================================
    CONTENEDOR PRINCIPAL (pasta del cuaderno)
 ===================================================== */

@@ -42,8 +42,11 @@
             <button class="btn-pdf"      onclick="generarPDF()">📄 PDF</button>
             <button class="btn-libro"    onclick="abrirLibro()">📖 Ver Libro</button>
             <button class="btn-ingles"   onclick="toggleIngles()">🇬🇧 Guía Inglés</button>
-            <!-- NUEVO BOTÓN -->
+            <!-- Cargar archivo externo -->
             <button class="btn-upload"   onclick="document.getElementById('file-input-hidden').click()">📁 Cargar Archivo</button>
+            <!-- Copia de seguridad -->
+            <button class="btn-backup"   onclick="exportarNotas()">⬇ Exportar notas</button>
+            <button class="btn-restore"  onclick="document.getElementById('restore-input-hidden').click()">⬆ Importar notas</button>
             <a href="cuestionario/index.html">
                 <button class="btn-cuestionario" style="background-color: #2a2520; color: white;">❓ Cuestionario</button>
             </a>
@@ -56,6 +59,14 @@
             style="display:none"
             accept=".pdf,.docx,.doc,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg"
             onchange="manejarArchivoSubido(this)"
+        >
+        <!-- Input oculto para restaurar backup JSON -->
+        <input
+            type="file"
+            id="restore-input-hidden"
+            style="display:none"
+            accept=".json"
+            onchange="importarNotas(this)"
         >
 
         <!-- Indicador de autoguardado -->

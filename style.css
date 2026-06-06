@@ -179,7 +179,7 @@ body {
 .btn-ingles   { background: #2a0e1a !important; border-color: #ff007f !important; color: #ff7fbf !important; }
 .btn-ingles:hover   { background: #ff007f !important; color: #fff !important; }
 
-/* ── NUEVO: botón Cargar Archivo ── */
+/* ── Cargar Archivo ── */
 .btn-upload {
     border-color: #3a7a5a !important;
     color: #5bbf92 !important;
@@ -187,6 +187,26 @@ body {
 }
 .btn-upload:hover {
     background: #3a7a5a !important;
+    color: #fff !important;
+}
+
+/* ── Exportar / Importar notas ── */
+.btn-backup {
+    border-color: #4a6a9a !important;
+    color: #7aaad4 !important;
+    background: #0e1520 !important;
+}
+.btn-backup:hover {
+    background: #4a6a9a !important;
+    color: #fff !important;
+}
+.btn-restore {
+    border-color: #7a4a9a !important;
+    color: #b47ad4 !important;
+    background: #150e20 !important;
+}
+.btn-restore:hover {
+    background: #7a4a9a !important;
     color: #fff !important;
 }
 

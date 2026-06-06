@@ -802,9 +802,15 @@ async function manejarArchivoSubido(inputEl) {
 //  LECTORES POR TIPO
 // ============================================================
 
-/** Lee un PDF página a página con PDF.js y devuelve HTML con el texto. */
+/**
+ * Lee un PDF con PDF.js.
+ * Estrategia dual:
+ *   1. Intenta extraer texto. Si una página tiene contenido real, lo usa.
+ *   2. Si la página no tiene texto útil (escaneada / solo imágenes),
+ *      la renderiza en un <canvas> y la embebe como imagen base64.
+ * Así funciona con cualquier tipo de PDF.
+ */
 async function leerPDF(archivo) {
-    // Configurar worker de PDF.js
     if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js no cargado');
     pdfjsLib.GlobalWorkerOptions.workerSrc =
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -813,30 +819,40 @@ async function leerPDF(archivo) {
     const pdf         = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     let html = '';
 
+    // Renderizar siempre como imagen — funciona con cualquier PDF
+    const ESCALA = 1.5;
+
     for (let i = 1; i <= pdf.numPages; i++) {
-        const page    = await pdf.getPage(i);
-        const content = await page.getTextContent();
+        const page     = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: ESCALA });
 
-        // Agrupar items en líneas usando su posición Y
-        const lineas = {};
-        content.items.forEach(item => {
-            const y = Math.round(item.transform[5]);
-            if (!lineas[y]) lineas[y] = [];
-            lineas[y].push(item.str);
-        });
+        const canvas  = document.createElement('canvas');
+        canvas.width  = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
 
-        const yKeys = Object.keys(lineas).map(Number).sort((a, b) => b - a);
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
 
-        html += `<p><strong style="color:#8b6914;">— Página ${i} —</strong></p>`;
-        yKeys.forEach(y => {
-            const linea = lineas[y].join(' ').trim();
-            if (linea) html += `<p>${escaparHTML(linea)}</p>`;
-        });
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
-        if (i < pdf.numPages) html += '<hr style="border:none;border-top:1px dashed #d4c9b0;margin:12px 0;">';
+        html += `
+            <div style="margin-bottom:16px;">
+                <p style="margin:0 0 4px;font-size:0.75rem;color:#8b6914;
+                           font-family:Georgia,serif;letter-spacing:0.05em;">
+                    Página ${i} / ${pdf.numPages}
+                </p>
+                <img src="${dataUrl}"
+                     alt="Página ${i}"
+                     style="display:block;width:100%;height:auto;
+                            border:1px solid #d4c9b0;border-radius:4px;
+                            box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+            </div>`;
+
+        if (i < pdf.numPages) {
+            html += '<hr style="border:none;border-top:1px dashed #d4c9b0;margin:4px 0 16px;">';
+        }
     }
 
-    return html || '<p><em>(El PDF no contiene texto extraíble — puede ser un PDF escaneado.)</em></p>';
+    return html || '<p><em>(No se pudo renderizar el PDF.)</em></p>';
 }
 
 /** Lee un DOCX con Mammoth y devuelve el HTML generado. */
@@ -962,4 +978,99 @@ function escaparHTML(str) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+}
+
+// ============================================================
+//  EXPORTAR / IMPORTAR NOTAS (copia de seguridad en JSON)
+// ============================================================
+
+/**
+ * Descarga todas las notas de localStorage como un archivo .json.
+ * El archivo se guarda en la carpeta de descargas del usuario y
+ * puede restaurarse más tarde con importarNotas().
+ */
+function exportarNotas() {
+    const claves = Object.keys(localStorage).filter(k => k.startsWith('nota__'));
+
+    if (claves.length === 0) {
+        mostrarToast('⚠️ No hay notas guardadas para exportar.', 'error');
+        return;
+    }
+
+    const datos = {};
+    claves.forEach(clave => {
+        datos[clave.replace('nota__', '')] = localStorage.getItem(clave);
+    });
+
+    const json     = JSON.stringify(datos, null, 2);
+    const blob     = new Blob([json], { type: 'application/json' });
+    const url      = URL.createObjectURL(blob);
+    const fecha    = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const nombreArchivo = `cuaderno-inframen-${fecha}.json`;
+
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = nombreArchivo;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    mostrarToast(`⬇ ${claves.length} nota(s) exportadas como "${nombreArchivo}".`, 'exito', 4000);
+}
+
+/**
+ * Lee un archivo .json exportado previamente y restaura las notas
+ * en localStorage. Muestra un resumen de cuántas se importaron.
+ */
+function importarNotas(inputEl) {
+    const archivo = inputEl.files[0];
+    if (!archivo) return;
+    inputEl.value = ''; // reset para poder volver a elegir el mismo archivo
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const datos = JSON.parse(e.target.result);
+
+            if (typeof datos !== 'object' || Array.isArray(datos)) {
+                mostrarToast('❌ El archivo no tiene el formato correcto.', 'error');
+                return;
+            }
+
+            const entradas = Object.entries(datos);
+            if (entradas.length === 0) {
+                mostrarToast('⚠️ El archivo está vacío.', 'error');
+                return;
+            }
+
+            let importadas = 0;
+            let errores    = 0;
+
+            entradas.forEach(([titulo, contenido]) => {
+                if (typeof titulo === 'string' && typeof contenido === 'string') {
+                    try {
+                        localStorage.setItem('nota__' + titulo, contenido);
+                        importadas++;
+                    } catch (_) {
+                        errores++;
+                    }
+                }
+            });
+
+            if (importadas > 0) {
+                mostrarToast(
+                    `✅ ${importadas} nota(s) importadas correctamente.` +
+                    (errores > 0 ? ` (${errores} fallaron por espacio.)` : ''),
+                    'exito',
+                    4000
+                );
+            } else {
+                mostrarToast('❌ No se pudo importar ninguna nota. Almacenamiento lleno.', 'error');
+            }
+
+        } catch (err) {
+            mostrarToast('❌ Error al leer el archivo. ¿Es un JSON válido?', 'error');
+            console.error('[importarNotas]', err);
+        }
+    };
+    reader.readAsText(archivo);
 }

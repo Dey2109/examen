@@ -1,10 +1,13 @@
-/* =====================================================
+/* ════════════════════════════════════════════════════════
    CUESTIONARIO — INFRAMEN
-   Estilo idéntico al Cuaderno Digital
-===================================================== */
+   style.css  ·  Carpeta: cuestionario/css/
+════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;600&display=swap');
 
+/* ────────────────────────────────────────────────────────
+   VARIABLES — idénticas al cuaderno
+──────────────────────────────────────────────────────── */
 :root {
     --fondo:          #14120f;
     --fondo-panel:    #1c1a16;
@@ -23,14 +26,19 @@
     --fuente-cuerpo:  'DM Sans', system-ui, sans-serif;
     --sombra:         0 4px 24px rgba(0,0,0,0.45);
 
-    /* Colores específicos del cuestionario */
-    --correcto:       #2d5a2d;
-    --correcto-text:  #7fbf7f;
-    --incorrecto:     #5a2d2d;
-    --incorrecto-text:#c47f7f;
-    --drag-over:      rgba(200, 169, 110, 0.12);
+    /* Colores semánticos del cuestionario */
+    --correcto:       rgba(42, 100, 58, 0.22);
+    --correcto-borde: #2e6e3e;
+    --correcto-texto: #6dbf8a;
+    --incorrecto:       rgba(100, 42, 42, 0.22);
+    --incorrecto-borde: #7a3030;
+    --incorrecto-texto: #c47f7f;
+    --drop-hover:     rgba(200, 169, 110, 0.10);
 }
 
+/* ────────────────────────────────────────────────────────
+   RESET & BASE
+──────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -46,21 +54,72 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     padding: 20px 10px 60px;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* =====================================================
-   CONTENEDOR PRINCIPAL — igual al .container del cuaderno
-===================================================== */
-.notebook-container {
+/* ════════════════════════════════════════════════════════
+   HEADER CYBER — mismo que el cuaderno
+════════════════════════════════════════════════════════ */
+.header-global-cyber {
+    width: 100%;
     max-width: 860px;
-    margin: 2rem auto;
+    margin: 0 auto 1rem;
+    padding: 12px 20px;
+    background: rgba(10,16,36,0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-bottom: 2px solid var(--acento);
+    border-radius: var(--radio);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
+.header-grid-cyber { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
+
+.brand-cyber {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--fuente-display);
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--acento);
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0,240,255,0.4);
+    white-space: nowrap;
+}
+.icono-matriz { color: #fff; animation: pulseIcono 2s infinite ease-in-out; }
+
+.linea-conexion {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(0,240,255,0.3), transparent, rgba(0,240,255,0.3));
+    position: relative;
+}
+.linea-conexion::before {
+    content: '';
+    position: absolute; top: -2px; left: 50%;
+    width: 5px; height: 5px;
+    background: var(--acento);
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px var(--acento);
+}
+
+.status-cyber { display: flex; align-items: center; gap: 1.2rem; font-family: monospace; font-size: 0.75rem; }
+.terminal-id  { color: var(--texto-muted); letter-spacing: 1px; }
+
+.indicador-red {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,255,170,0.05);
+    border: 1px solid rgba(0,255,170,0.2);
+    padding: 3px 8px; border-radius: 2px;
+}
+.status-text  { color: #00ffaa; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 6px rgba(0,255,170,0.3); }
+.pulso-online { width: 5px; height: 5px; background: #00ffaa; border-radius: 50%; box-shadow: 0 0 6px #00ffaa; animation: blinkLed 1.2s infinite; }
+
+/* ════════════════════════════════════════════════════════
+   CONTENEDOR — mismo aspecto que .container del cuaderno
+════════════════════════════════════════════════════════ */
+.notebook-container { max-width: 860px; margin: 2rem auto; }
 
 .notebook-page {
     padding: 3.5rem 3rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: flex; flex-direction: column; gap: 1.5rem;
     background-color: var(--fondo-panel);
     background-image: radial-gradient(rgba(200,169,110,0.03) 1px, transparent 0);
     background-size: 4px 4px;
@@ -69,15 +128,13 @@ body {
     box-shadow:
         0 15px 35px rgba(0,0,0,0.6),
         inset -10px 0 20px rgba(0,0,0,0.4),
-        5px 5px 0px #0b0a08;
+        5px 5px 0 #0b0a08;
     position: relative;
 }
-
-/* Lomo del cuaderno */
+/* Lomo */
 .notebook-page::before {
     content: '';
-    position: absolute;
-    top: 0; left: 0;
+    position: absolute; top: 0; left: 0;
     width: 25px; height: 100%;
     background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, transparent 100%);
     border-right: 1px dashed rgba(200,169,110,0.15);
@@ -85,32 +142,28 @@ body {
     pointer-events: none;
 }
 
-/* =====================================================
-   TÍTULO DEL CUESTIONARIO
-===================================================== */
+/* ════════════════════════════════════════════════════════
+   TÍTULO
+════════════════════════════════════════════════════════ */
 .notebook-title {
     font-family: var(--fuente-display);
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.5rem; font-weight: 700;
     color: var(--acento);
     text-align: center;
     letter-spacing: 0.03em;
     text-shadow: -1px -1px 1px rgba(0,0,0,0.65), 1px 1px 1px rgba(255,255,255,0.07);
     padding-bottom: 1.2rem;
     border-bottom: 1px dashed var(--borde);
-    margin-bottom: 0.5rem;
 }
 
-/* =====================================================
-   BOTÓN GENERAL — idéntico a .actions-bar button
-===================================================== */
+/* ════════════════════════════════════════════════════════
+   BOTÓN BASE
+════════════════════════════════════════════════════════ */
 .notebook-btn {
     font-family: var(--fuente-cuerpo);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 0.55rem 1.1rem;
+    font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 0.55rem 1rem;
     border-radius: 4px;
     border: 1px solid var(--borde);
     cursor: pointer;
@@ -125,217 +178,284 @@ body {
 }
 .notebook-btn:active { transform: scale(0.97); }
 
-/* =====================================================
-   BLOQUES DE PREGUNTA
-===================================================== */
+/* ════════════════════════════════════════════════════════
+   INSTRUCCIÓN
+════════════════════════════════════════════════════════ */
+.quiz-instruccion {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    background: rgba(200,169,110,0.05);
+    border: 1px solid rgba(200,169,110,0.18);
+    border-left: 4px solid var(--acento);
+    border-radius: var(--radio);
+    padding: 0.85rem 1.1rem;
+    font-size: 0.84rem;
+    color: var(--texto-muted);
+    line-height: 1.5;
+}
+.quiz-instruccion .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ════════════════════════════════════════════════════════
+   BLOQUE DE PREGUNTA
+════════════════════════════════════════════════════════ */
 .bloque {
     background: var(--fondo-input);
     border: 1px solid var(--borde);
     border-radius: var(--radio-lg);
     padding: 1.4rem 1.6rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    transition: border-color 0.2s ease;
+    display: flex; flex-direction: column; gap: 1rem;
+    transition: border-color 0.2s;
     animation: fadeIn 0.35s ease both;
 }
+.bloque:hover { border-color: rgba(200,169,110,0.28); }
 
-.bloque:hover {
-    border-color: rgba(200, 169, 110, 0.3);
+/* Numeración de pregunta */
+.pregunta-num {
+    font-size: 0.7rem;
+    font-family: monospace;
+    color: var(--acento);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.8;
 }
 
-/* =====================================================
-   TARJETA PREGUNTA (draggable)
-===================================================== */
-.pregunta {
-    background: #fcf8f2;
-    border: 1px solid #d4c9b0;
-    border-left: 4px solid var(--acento);
-    border-radius: 4px;
-    padding: 0.75rem 1.1rem;
-    color: #2a2520;
+/* Enunciado */
+.pregunta-texto {
     font-family: var(--fuente-display);
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: grab;
-    user-select: none;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 2px 5px rgba(0,0,0,0.2);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    width: fit-content;
-    max-width: 100%;
+    font-size: 0.98rem; font-weight: 600;
+    color: var(--texto);
+    line-height: 1.5;
+    padding-left: 0.7rem;
+    border-left: 3px solid var(--acento);
 }
 
-.pregunta:hover {
-    transform: translateY(-1px);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 4px 10px rgba(200,169,110,0.25);
-}
-
-.pregunta:active,
-.pregunta[dragging="true"] {
-    cursor: grabbing;
-    opacity: 0.7;
-    transform: scale(0.98);
-}
-
-/* =====================================================
-   GRUPO DE RESPUESTAS
-===================================================== */
-.respuestas-grupo {
+/* ════════════════════════════════════════════════════════
+   BANCO DE OPCIONES (pool)
+════════════════════════════════════════════════════════ */
+.opciones-pool {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-}
-
-/* =====================================================
-   ZONA DE RESPUESTA (drop target)
-===================================================== */
-.respuesta {
-    flex: 1 1 140px;
-    min-height: 56px;
+    gap: 0.5rem;
+    min-height: 42px;
+    padding: 0.5rem 0.6rem;
+    background: rgba(0,0,0,0.14);
     border: 1.5px dashed var(--borde);
     border-radius: var(--radio);
-    padding: 0.6rem 0.9rem;
-    display: flex;
+    transition: border-color 0.18s, background 0.18s;
+}
+/* Estado activo mientras un chip pasa por encima */
+.opciones-pool.pool-over {
+    border-color: rgba(200,169,110,0.5);
+    background: rgba(200,169,110,0.06);
+}
+
+/* ════════════════════════════════════════════════════════
+   CHIP DE OPCIÓN (draggable)
+════════════════════════════════════════════════════════ */
+.opcion {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    color: var(--texto-muted);
+    gap: 5px;
+    padding: 0.38rem 0.9rem;
+    background: #fcf8f2;
+    border: 1px solid #d4c9b0;
+    border-radius: 20px;
+    color: #2a2520;
     font-family: var(--fuente-cuerpo);
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-align: center;
-    transition: all 0.18s ease;
-    position: relative;
-    background: rgba(0,0,0,0.12);
-    cursor: pointer;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: grab;
+    user-select: none;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
 }
+/* Icono de agarre */
+.opcion::before {
+    content: '⠿';
+    color: #b0a38a;
+    font-size: 0.68rem;
+    flex-shrink: 0;
+}
+.opcion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.22);
+}
+.opcion:active { cursor: grabbing; }
+/* Chip semitransparente mientras se arrastra */
+.opcion.dragging { opacity: 0.3; transform: scale(0.96); }
 
-/* Texto "fantasma" de la opción cuando está vacío */
-.respuesta::before {
-    content: attr(data-correcta);
-    position: absolute;
-    inset: 0;
+/* ════════════════════════════════════════════════════════
+   ZONA DE RESPUESTA (drop target)
+════════════════════════════════════════════════════════ */
+.zona-respuesta {
+    position: relative;
+    min-height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--borde);
-    font-size: 0.8rem;
+    padding: 0.45rem 0.8rem;
+    border: 2px dashed var(--borde);
+    border-radius: var(--radio);
+    background: rgba(0,0,0,0.10);
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+/*
+  FIX: en lugar de :empty::after (que nunca funciona porque
+  .zona-feedback siempre está dentro), usamos un atributo
+  data-placeholder que el CSS lee con attr().
+  El placeholder se muestra via el pseudo-elemento del label
+  que el JS gestiona con la clase .vacia.
+*/
+.zona-respuesta.vacia::after {
+    content: 'Arrastra aquí →';
+    font-size: 0.74rem;
+    color: var(--texto-muted);
     font-style: italic;
+    letter-spacing: 0.04em;
     pointer-events: none;
-    transition: opacity 0.2s;
 }
 
-.respuesta:has(.pregunta)::before {
-    opacity: 0;
-}
-
-/* Hover sobre zona de drop */
-.respuesta.over {
+/* Resaltado al pasar el chip encima */
+.zona-respuesta.drop-over {
     border-color: var(--acento);
-    background: var(--drag-over);
-    transform: scale(1.02);
-    box-shadow: 0 0 0 2px rgba(200,169,110,0.2);
+    border-style: solid;
+    background: var(--drop-hover);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.14);
 }
 
-/* Respuesta CON pregunta dentro — correcta */
-.respuesta.correcta {
-    border-color: var(--correcto) !important;
-    background: rgba(45, 90, 45, 0.18) !important;
+/* Resultado: correcta */
+.zona-respuesta.correcta {
+    border-color: var(--correcto-borde) !important;
+    border-style: solid !important;
+    background: var(--correcto) !important;
+}
+/* Resultado: incorrecta */
+.zona-respuesta.incorrecta {
+    border-color: var(--incorrecto-borde) !important;
+    border-style: solid !important;
+    background: var(--incorrecto) !important;
 }
 
-/* Respuesta CON pregunta dentro — incorrecta */
-.respuesta.incorrecta {
-    border-color: var(--incorrecto) !important;
-    background: rgba(90, 45, 45, 0.18) !important;
-}
-
-/* Ajuste de la tarjeta pregunta cuando cae dentro */
-.respuesta .pregunta {
-    width: 100%;
-    text-align: center;
-    font-size: 0.82rem;
-    padding: 0.5rem 0.7rem;
-    border-left-color: var(--acento);
+/* Chip dentro de la zona — sin cursor de arrastre al pasar */
+.zona-respuesta .opcion {
     cursor: default;
-    box-shadow: none;
+    /* reservar espacio a la derecha para el icono de feedback */
+    margin-right: 28px;
 }
+.zona-respuesta .opcion:hover { transform: none; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
 
-/* =====================================================
+/* ════════════════════════════════════════════════════════
+   FEEDBACK VISUAL (✓ / ✗)  al calificar
+════════════════════════════════════════════════════════ */
+.zona-feedback {
+    position: absolute;
+    right: 10px;
+    font-size: 1rem;
+    line-height: 1;
+    pointer-events: none;
+    /* oculto por defecto */
+    display: none;
+}
+.zona-respuesta.correcta   .zona-feedback,
+.zona-respuesta.incorrecta .zona-feedback { display: block; }
+
+.zona-respuesta.correcta   .zona-feedback { color: var(--correcto-texto); }
+.zona-respuesta.incorrecta .zona-feedback { color: var(--incorrecto-texto); }
+
+/* ════════════════════════════════════════════════════════
    ZONA DE ACCIÓN FINAL
-===================================================== */
+════════════════════════════════════════════════════════ */
 .action-zone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 1rem;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    padding-top: 1.2rem;
     border-top: 1px dashed var(--borde);
 }
 
-.action-zone .notebook-btn {
-    background: var(--acento) !important;
-    color: #1c1a16 !important;
-    border-color: var(--acento) !important;
-    font-size: 0.82rem;
-    padding: 0.65rem 2rem;
+.btn-finalizar {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.82rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.7rem 2.4rem;
+    border-radius: var(--radio);
+    border: 1px solid var(--acento);
+    background: var(--acento);
+    color: #1c1a16;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
+    box-shadow: 0 2px 10px rgba(200,169,110,0.2);
 }
-.action-zone .notebook-btn:hover {
-    background: var(--acento-hover) !important;
+.btn-finalizar:hover {
+    background: var(--acento-hover);
+    box-shadow: 0 4px 18px rgba(200,169,110,0.32);
+    transform: translateY(-2px);
 }
+.btn-finalizar:active { transform: scale(0.97); }
 
-/* =====================================================
-   RESULTADO / NOTA
-===================================================== */
+/* Panel de resultado */
 .resultado-nota {
     font-family: var(--fuente-display);
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.4rem; font-weight: 700;
     color: var(--acento);
     letter-spacing: 0.04em;
     text-align: center;
     min-height: 2rem;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.35s ease;
+}
+.resultado-detalle {
+    font-size: 0.78rem;
+    font-family: monospace;
+    color: var(--texto-muted);
+    letter-spacing: 0.05em;
+    text-align: center;
 }
 
-/* =====================================================
+/* ════════════════════════════════════════════════════════
    SCROLLBARS
-===================================================== */
+════════════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--fondo); }
 ::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--texto-muted); }
 
-/* =====================================================
+/* ════════════════════════════════════════════════════════
    ANIMACIONES
-===================================================== */
+════════════════════════════════════════════════════════ */
+@keyframes blinkLed {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50%       { opacity: 1;   transform: scale(1.1); }
+}
+@keyframes pulseIcono {
+    0%, 100% { transform: scale(1);    opacity: 0.8; }
+    50%       { transform: scale(1.05); opacity: 1;  }
+}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Delays escalonados para los bloques */
-.bloque:nth-child(1)  { animation-delay: 0.05s; }
-.bloque:nth-child(2)  { animation-delay: 0.10s; }
-.bloque:nth-child(3)  { animation-delay: 0.15s; }
-.bloque:nth-child(4)  { animation-delay: 0.20s; }
-.bloque:nth-child(5)  { animation-delay: 0.25s; }
-.bloque:nth-child(6)  { animation-delay: 0.30s; }
-.bloque:nth-child(7)  { animation-delay: 0.35s; }
-.bloque:nth-child(8)  { animation-delay: 0.40s; }
-.bloque:nth-child(9)  { animation-delay: 0.45s; }
-.bloque:nth-child(10) { animation-delay: 0.50s; }
+/* Entrada escalonada por bloque */
+.bloque:nth-child(1)  { animation-delay: 0.04s; }
+.bloque:nth-child(2)  { animation-delay: 0.08s; }
+.bloque:nth-child(3)  { animation-delay: 0.12s; }
+.bloque:nth-child(4)  { animation-delay: 0.16s; }
+.bloque:nth-child(5)  { animation-delay: 0.20s; }
+.bloque:nth-child(6)  { animation-delay: 0.24s; }
+.bloque:nth-child(7)  { animation-delay: 0.28s; }
+.bloque:nth-child(8)  { animation-delay: 0.32s; }
+.bloque:nth-child(9)  { animation-delay: 0.36s; }
+.bloque:nth-child(10) { animation-delay: 0.40s; }
 
-/* =====================================================
+/* ════════════════════════════════════════════════════════
    RESPONSIVE
-===================================================== */
+════════════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-    .notebook-page {
-        padding: 2.5rem 1.2rem 4rem;
-        margin: 1rem auto;
-        border-radius: 12px;
-    }
+    .notebook-page { padding: 2.5rem 1.2rem 4rem; margin: 1rem auto; border-radius: 12px; }
     .notebook-title { font-size: 1.2rem; }
-    .respuestas-grupo { flex-direction: column; }
-    .respuesta { flex: 1 1 100%; }
-    .pregunta { font-size: 0.88rem; }
+    .opciones-pool  { gap: 0.4rem; }
+    .opcion         { font-size: 0.78rem; padding: 0.32rem 0.75rem; }
+    .brand-cyber    { font-size: 0.75rem; letter-spacing: 1px; }
+    .terminal-id    { display: none; }
 }

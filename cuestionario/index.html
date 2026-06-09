@@ -3,118 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuestionario</title>
+    <title>Cuestionario — INFRAMEN</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+
+    <header class="header-global-cyber">
+        <div class="header-grid-cyber">
+            <div class="brand-cyber">
+                <span class="icono-matriz">[🦂]</span>
+                <span>INFRAMEN //--IN--</span>
+            </div>
+            <div class="linea-conexion"></div>
+            <div class="status-cyber">
+                <span class="terminal-id">David Reyes</span>
+                <div class="indicador-red">
+                    <span class="pulso-online"></span>
+                    <span class="status-text">1-2 DS :D</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
     <div class="notebook-container">
         <div class="notebook-page">
-            
-            <div style="margin-bottom: 20px;">
-                <button onclick="window.history.back()" class="notebook-btn" style="background-color: #9b111e; color: white;">
-                    ⬅️ Volver al Cuaderno
+
+            <div>
+                <button class="notebook-btn"
+                        onclick="window.history.back()"
+                        style="border-color:#9b111e;color:#d96060;background:#1c0e0e;">
+                    ⬅ Volver al Cuaderno
                 </button>
             </div>
 
-            <h1 class="notebook-title">Tarea: Cuestionario de Arrastrar</h1>
-            
-            <div class="bloque">
-                <div class="pregunta" draggable="true" data-respuesta="San Salvador">¿Cuál es la capital de El Salvador?</div>
-                <div class="respuestas-grupo">
-                    <div class="respuesta" data-correcta="San Salvador">San Salvador</div>
-                    <div class="respuesta" data-correcta="San Salvador">Santa Ana</div>
-                    <div class="respuesta" data-correcta="San Salvador">La Libertad</div>
+            <h1 class="notebook-title">Tarea: Cuestionario Interactivo</h1>
+
+            <div class="quiz-instruccion">
+                <span class="icon">💡</span>
+                Arrastra la respuesta correcta desde el banco hacia la zona punteada de cada pregunta.
+                Si te equivocas, arrastra la opción de vuelta al banco y elige otra.
+            </div>
+
+            <!-- ── Pregunta 1 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="San Salvador">
+                <div>
+                    <div class="pregunta-num">Pregunta 01</div>
+                    <div class="pregunta-texto">¿Cuál es la capital de El Salvador?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="San Salvador">San Salvador</div>
+                    <div class="opcion" draggable="true" data-valor="Santa Ana">Santa Ana</div>
+                    <div class="opcion" draggable="true" data-valor="La Libertad">La Libertad</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
                 </div>
             </div>
 
-            <div class="bloque">
-                <div class="pregunta" draggable="true" data-respuesta="8">¿Cuánto es 5 + 3?</div>
-                <div class="respuestas-grupo">
-                    <div class="respuesta" data-correcta="8">8</div>
-                    <div class="respuesta" data-correcta="8">5</div>
-                    <div class="respuesta" data-correcta="8">9</div>
+            <!-- ── Pregunta 2 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="8">
+                <div>
+                    <div class="pregunta-num">Pregunta 02</div>
+                    <div class="pregunta-texto">¿Cuánto es 5 + 3?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="8">8</div>
+                    <div class="opcion" draggable="true" data-valor="5">5</div>
+                    <div class="opcion" draggable="true" data-valor="9">9</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
                 </div>
             </div>
 
-            <div class="bloque">
-                <div class="pregunta" draggable="true" data-respuesta="9">¿Cuánto es 6 + 3?</div>
-                <div class="respuestas-grupo">
-                    <div class="respuesta" data-correcta="9">9</div>
-                    <div class="respuesta" data-correcta="9">7</div>
-                    <div class="respuesta" data-correcta="9">6</div>
+            <!-- ── Pregunta 3 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="9">
+                <div>
+                    <div class="pregunta-num">Pregunta 03</div>
+                    <div class="pregunta-texto">¿Cuánto es 6 + 3?</div>
                 </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Madrid">Cuál es la capital de España?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Madrid">Madrid</div>
-                        <div class="respuesta" data-correcta="Madrid">Barcelona</div>
-                        <div class="respuesta" data-correcta="Madrid">Valencia</div>
-                    </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="9">9</div>
+                    <div class="opcion" draggable="true" data-valor="7">7</div>
+                    <div class="opcion" draggable="true" data-valor="6">6</div>
                 </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="1 de mayo de 1885">¿Cuándo se fundó el Instituto Nacional "General Francisco Menéndez"?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="1 de mayo de 1885">1 de mayo de 1885</div>
-                        <div class="respuesta" data-correcta="1 de mayo de 1885">15 de septiembre de 1821</div>
-                        <div class="respuesta" data-correcta="1 de mayo de 1885">20 de octubre de 1900</div>
-                    </div>
-                </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Agua">¿Cuál es el compuesto químico más abundante en la Tierra?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Agua">Agua</div>
-                        <div class="respuesta" data-correcta="Agua">Oxígeno</div>
-                        <div class="respuesta" data-correcta="Agua">Dióxido de carbono</div>
-                    </div>
-                </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Madrid">Cuál es la capital de España?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Madrid">Madrid</div>
-                        <div class="respuesta" data-correcta="Madrid">Barcelona</div>
-                        <div class="respuesta" data-correcta="Madrid">Valencia</div>
-                    </div>
-                </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Madrid">Cuál es la capital de España?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Madrid">Madrid</div>
-                        <div class="respuesta" data-correcta="Madrid">Barcelona</div>
-                        <div class="respuesta" data-correcta="Madrid">Valencia</div>
-                    </div>
-                </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Madrid">Cuál es la capital de España?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Madrid">Madrid</div>
-                        <div class="respuesta" data-correcta="Madrid">Barcelona</div>
-                        <div class="respuesta" data-correcta="Madrid">Valencia</div>
-                    </div>
-                </div>
-
-                <div class="bloque">
-                    <div class="pregunta" draggable="true" data-respuesta="Madrid">Cuál es la capital de España?</div>
-                    <div class="respuestas-grupo">
-                        <div class="respuesta" data-correcta="Madrid">Madrid</div>
-                        <div class="respuesta" data-correcta="Madrid">Barcelona</div>
-                        <div class="respuesta" data-correcta="Madrid">Valencia</div>
-                    </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
                 </div>
             </div>
 
+            <!-- ── Pregunta 4 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="Madrid">
+                <div>
+                    <div class="pregunta-num">Pregunta 04</div>
+                    <div class="pregunta-texto">¿Cuál es la capital de España?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="Madrid">Madrid</div>
+                    <div class="opcion" draggable="true" data-valor="Barcelona">Barcelona</div>
+                    <div class="opcion" draggable="true" data-valor="Valencia">Valencia</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 5 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="1 de mayo de 1885">
+                <div>
+                    <div class="pregunta-num">Pregunta 05</div>
+                    <div class="pregunta-texto">¿Cuándo se fundó el Instituto Nacional "General Francisco Menéndez"?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="1 de mayo de 1885">1 de mayo de 1885</div>
+                    <div class="opcion" draggable="true" data-valor="15 de septiembre de 1821">15 de septiembre de 1821</div>
+                    <div class="opcion" draggable="true" data-valor="20 de octubre de 1900">20 de octubre de 1900</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 6 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="Agua">
+                <div>
+                    <div class="pregunta-num">Pregunta 06</div>
+                    <div class="pregunta-texto">¿Cuál es el compuesto químico más abundante en la Tierra?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="Agua">Agua</div>
+                    <div class="opcion" draggable="true" data-valor="Oxígeno">Oxígeno</div>
+                    <div class="opcion" draggable="true" data-valor="Dióxido de carbono">Dióxido de carbono</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 7 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="Júpiter">
+                <div>
+                    <div class="pregunta-num">Pregunta 07</div>
+                    <div class="pregunta-texto">¿Cuál es el planeta más grande del sistema solar?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="Júpiter">Júpiter</div>
+                    <div class="opcion" draggable="true" data-valor="Saturno">Saturno</div>
+                    <div class="opcion" draggable="true" data-valor="Neptuno">Neptuno</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 8 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="Leonardo da Vinci">
+                <div>
+                    <div class="pregunta-num">Pregunta 08</div>
+                    <div class="pregunta-texto">¿Quién pintó la Mona Lisa?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="Leonardo da Vinci">Leonardo da Vinci</div>
+                    <div class="opcion" draggable="true" data-valor="Miguel Ángel">Miguel Ángel</div>
+                    <div class="opcion" draggable="true" data-valor="Rafael Sanzio">Rafael Sanzio</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 9 ─────────────────────────────── -->
+            <div class="bloque" data-correcta="Python">
+                <div>
+                    <div class="pregunta-num">Pregunta 09</div>
+                    <div class="pregunta-texto">¿Cuál es el lenguaje de programación conocido por su sintaxis legible y uso en inteligencia artificial?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="Python">Python</div>
+                    <div class="opcion" draggable="true" data-valor="COBOL">COBOL</div>
+                    <div class="opcion" draggable="true" data-valor="Assembly">Assembly</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Pregunta 10 ────────────────────────────── -->
+            <div class="bloque" data-correcta="HTML">
+                <div>
+                    <div class="pregunta-num">Pregunta 10</div>
+                    <div class="pregunta-texto">¿Cuál es el lenguaje de marcado base de toda página web?</div>
+                </div>
+                <div class="opciones-pool">
+                    <div class="opcion" draggable="true" data-valor="HTML">HTML</div>
+                    <div class="opcion" draggable="true" data-valor="CSS">CSS</div>
+                    <div class="opcion" draggable="true" data-valor="JavaScript">JavaScript</div>
+                </div>
+                <div class="zona-respuesta vacia">
+                    <span class="zona-feedback"></span>
+                </div>
+            </div>
+
+            <!-- ── Acción final ───────────────────────────── -->
             <div class="action-zone">
-                <button class="notebook-btn" onclick="calcularNota()">Finalizar</button>
-                <div id="resultado" class="resultado-nota"></div>
+                <button class="btn-finalizar" onclick="calcularNota()">
+                    ✦ Finalizar y Calificar
+                </button>
+                <div id="resultado"        class="resultado-nota"></div>
+                <div id="resultado-detalle" class="resultado-detalle"></div>
             </div>
-        </div>
-    </div>
+
+        </div><!-- .notebook-page -->
+    </div><!-- .notebook-container -->
+
 
     <script src="js/script.js"></script>
 </body>

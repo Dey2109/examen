@@ -1,7 +1,7 @@
 /* ================================================================
    INFRAMEN — SISTEMA DE DISEÑO GLOBAL
    Cuaderno Digital + Cuestionario
-   v3.0
+   v3.1 — Libro 3D mejorado
 ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap');
@@ -983,7 +983,7 @@ body {
 .ejercicio-item input.incorrecto { border-color: #e04040 !important; background: rgba(80, 0, 0, 0.40) !important; }
 
 /* ================================================================
-   LIBRO — CUADERNO ESPIRAL
+   LIBRO — SECCIÓN CONTENEDORA
 ================================================================ */
 .seccion-libro {
     display: none;
@@ -1010,20 +1010,26 @@ body {
     margin-bottom: 2.2rem;
 }
 
+/* ================================================================
+   LIBRO — ESCENA 3D
+   perspective en el padre, transform-style en los hijos
+================================================================ */
 .cuaderno-escena {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 1rem 0 3rem;
-    perspective: 1400px;
+    perspective: 1400px;          /* ← profundidad 3D de toda la escena */
 }
 
 .cuaderno-cuerpo {
     position: relative;
     width: 480px;
     height: 560px;
+    transform-style: preserve-3d;
 }
 
+/* ── Tapa trasera (fija, siempre visible detrás) ─────────────── */
 .cuaderno-tapa-trasera {
     position: absolute;
     inset: 0;
@@ -1034,6 +1040,7 @@ body {
     z-index: 1;
 }
 
+/* ── Bloque de páginas interiores ────────────────────────────── */
 .cuaderno-paginas {
     position: absolute;
     top: 10px;
@@ -1044,12 +1051,18 @@ body {
     border-radius: 2px 14px 14px 2px;
     z-index: 2;
     overflow: hidden;
+
+    /* Estado cerrado: invisible + ligeramente girado hacia dentro */
     opacity: 0;
-    transition: opacity var(--t-base) ease 0.4s;
+    transform: rotateY(-12deg);
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition:
+        opacity 0.35s ease 0.45s,
+        transform 0.55s var(--ease-out) 0.38s;
 }
 
-.cuaderno-paginas.visible { opacity: 1; }
-
+/* Renglones de cuaderno */
 .cuaderno-paginas::before {
     content: '';
     position: absolute;
@@ -1060,6 +1073,7 @@ body {
     pointer-events: none;
 }
 
+/* Margen rojo vertical */
 .cuaderno-paginas::after {
     content: '';
     position: absolute;
@@ -1071,6 +1085,13 @@ body {
     pointer-events: none;
 }
 
+/* Estado abierto: totalmente plano y visible */
+.cuaderno-paginas.visible {
+    opacity: 1;
+    transform: rotateY(0deg);
+}
+
+/* ── Contenido de la página ────────────────────────────────────*/
 .pagina-contenido {
     position: absolute;
     top: 18px;
@@ -1106,7 +1127,12 @@ body {
 .pagina-cuerpo::-webkit-scrollbar { width: 3px; }
 .pagina-cuerpo::-webkit-scrollbar-thumb { background: #c8b89a; border-radius: 2px; }
 .pagina-cuerpo p { margin-bottom: 0; }
-.pagina-cuerpo h1, .pagina-cuerpo h2, .pagina-cuerpo h3 { font-family: var(--fuente-display); margin: 6px 0 2px; line-height: 28px; color: #2a2218; }
+.pagina-cuerpo h1, .pagina-cuerpo h2, .pagina-cuerpo h3 {
+    font-family: var(--fuente-display);
+    margin: 6px 0 2px;
+    line-height: 28px;
+    color: #2a2218;
+}
 .pagina-cuerpo table { width: 100% !important; table-layout: fixed; font-size: 0.75rem; }
 
 .pagina-numero {
@@ -1120,6 +1146,21 @@ body {
     z-index: 4;
 }
 
+/* ── Espiral SVG ───────────────────────────────────────────────*/
+.cuaderno-espiral {
+    position: absolute;
+    top: 0;
+    left: 16px;
+    width: 28px;
+    height: 100%;
+    z-index: 20;
+    pointer-events: none;
+    overflow: visible;
+}
+
+/* ================================================================
+   TAPA DELANTERA — EFECTO 3D COMPLETO
+================================================================ */
 .cuaderno-tapa-front {
     position: absolute;
     inset: 0;
@@ -1127,11 +1168,21 @@ body {
     border-radius: 4px 18px 18px 4px;
     border: 2px solid #4a3820;
     z-index: 10;
+
+    /* Pivote en el lomo izquierdo */
     transform-origin: left center;
     transform: rotateY(0deg);
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+
+    /* Transición suave tipo libro real */
+    transition:
+        transform 0.85s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.85s ease;
+
     backface-visibility: hidden;
-    box-shadow: 5px 0 16px rgba(0, 0, 0, 0.45);
+    box-shadow:
+        5px 0 18px rgba(0, 0, 0, 0.55),
+        inset -2px 0 8px rgba(0, 0, 0, 0.30);
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -1141,12 +1192,38 @@ body {
     user-select: none;
 }
 
+/* Borde derecho que simula grosor del libro */
+.cuaderno-tapa-front::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -6px;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent);
+    border-radius: 0 4px 4px 0;
+    transition: opacity 0.4s;
+}
+
+/* Tapa abierta: gira -170° y queda plana detrás */
 .cuaderno-tapa-front.abierta {
     transform: rotateY(-170deg);
     box-shadow: none;
     cursor: default;
 }
 
+.cuaderno-tapa-front.abierta::after { opacity: 0; }
+
+/* Hover cerrada: pequeño levante que invita a abrir */
+.cuaderno-tapa-front:not(.abierta):hover {
+    transform: rotateY(-8deg);
+    box-shadow:
+        8px 0 24px rgba(0, 0, 0, 0.60),
+        0 0 32px rgba(200, 169, 110, 0.12),
+        inset -2px 0 8px rgba(0, 0, 0, 0.30);
+}
+
+/* ── Decoración interna de la tapa ───────────────────────────── */
 .tapa-lomo {
     position: absolute;
     top: 0;
@@ -1193,22 +1270,18 @@ body {
     color: rgba(200, 169, 110, 0.30);
     letter-spacing: 0.10em;
     text-transform: uppercase;
-    transition: color var(--t-base);
+    transition: color var(--t-base), opacity var(--t-base);
 }
 
-.cuaderno-tapa-front:hover .tapa-hint { color: rgba(200, 169, 110, 0.75); }
-
-.cuaderno-espiral {
-    position: absolute;
-    top: 0;
-    left: 16px;
-    width: 28px;
-    height: 100%;
-    z-index: 20;
-    pointer-events: none;
-    overflow: visible;
+.cuaderno-tapa-front:not(.abierta):hover .tapa-hint {
+    color: rgba(200, 169, 110, 0.80);
 }
 
+.cuaderno-tapa-front.abierta .tapa-hint { opacity: 0; }
+
+/* ================================================================
+   NAVEGACIÓN DEL LIBRO
+================================================================ */
 .libro-nav {
     display: flex;
     align-items: center;
@@ -1216,7 +1289,7 @@ body {
     gap: 1.2rem;
     margin-top: 0.8rem;
     opacity: 0;
-    transition: opacity var(--t-base) ease 0.5s;
+    transition: opacity 0.35s ease 0.55s;
 }
 
 .libro-nav.visible { opacity: 1; }
@@ -1292,9 +1365,6 @@ body {
     margin: 0 auto;
 }
 
-/* El .notebook-page hereda los estilos del .container */
-
-/* Título del cuestionario */
 .notebook-title {
     font-family: var(--fuente-display);
     font-size: 1.55rem;
@@ -1310,8 +1380,6 @@ body {
 /* ================================================================
    CUESTIONARIO — PREGUNTAS Y OPCIONES
 ================================================================ */
-
-/* Bloque de una pregunta */
 .bloque {
     background: var(--fondo-elevado);
     border: 1px solid var(--borde);
@@ -1343,7 +1411,6 @@ body {
 .bloque:hover { border-color: var(--borde-medio); }
 .bloque:hover::before { background: var(--acento-600); }
 
-/* Delays escalonados */
 .bloque:nth-child(1)  { animation-delay: 0.04s; }
 .bloque:nth-child(2)  { animation-delay: 0.08s; }
 .bloque:nth-child(3)  { animation-delay: 0.12s; }
@@ -1355,7 +1422,6 @@ body {
 .bloque:nth-child(9)  { animation-delay: 0.36s; }
 .bloque:nth-child(10) { animation-delay: 0.40s; }
 
-/* Texto de la pregunta */
 .pregunta-texto {
     font-family: var(--fuente-display);
     font-size: 1.02rem;
@@ -1365,14 +1431,12 @@ body {
     padding-left: 0.5rem;
 }
 
-/* Grupo de opciones */
 .opciones-grupo {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-/* Cada opción — tarjeta arrastrable */
 .opcion {
     background: var(--papel);
     border: 1.5px solid var(--papel-borde);
@@ -1417,7 +1481,6 @@ body {
     cursor: grabbing;
 }
 
-/* Zona de destino (drop zone) */
 .zona-destino {
     border: 1.5px dashed var(--borde-medio);
     border-radius: var(--radio);
@@ -1468,7 +1531,6 @@ body {
     box-shadow: 0 0 0 2px rgba(180, 60, 60, 0.15) !important;
 }
 
-/* Opción dentro de la zona de destino */
 .zona-destino .opcion {
     width: 100%;
     cursor: default;
@@ -1478,7 +1540,6 @@ body {
 
 .zona-destino .opcion::before { display: none; }
 
-/* Layout de la pregunta con la zona de respuesta */
 .pregunta-fila {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -1550,7 +1611,7 @@ body {
     animation: fadeIn var(--t-slow) var(--ease-spring);
 }
 
-.resultado-nota.aprobado { color: var(--ok-texto); }
+.resultado-nota.aprobado  { color: var(--ok-texto); }
 .resultado-nota.reprobado { color: var(--error-texto); }
 
 /* ================================================================
@@ -1648,7 +1709,9 @@ body {
 
     .flecha-drop { transform: rotate(90deg); font-size: 0.9rem; }
 
-    .cuaderno-cuerpo { width: 340px; height: 400px; }
+    /* Cuaderno reducido en móvil — sigue funcionando el 3D */
+    .cuaderno-escena { perspective: 800px; }
+    .cuaderno-cuerpo { width: 300px; height: 380px; }
 
     #toast-container { right: 0.8rem; bottom: 0.8rem; left: 0.8rem; }
     .toast { max-width: 100%; }

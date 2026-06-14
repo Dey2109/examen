@@ -581,6 +581,7 @@ const generarPDF = async () => {
 let paginasLibro       = [];
 let paginaActualLibro  = 0;
 let tapaAbierta        = false;
+let _animandoTapa     = false; // para evitar clics durante la animación
 
 function generarEspiral() {
     const svg = document.getElementById('espiral-svg');
@@ -616,6 +617,9 @@ function renderPaginaLibro() {
     document.getElementById('btn-prev').disabled = paginaActualLibro === 0;
     document.getElementById('btn-next').disabled = paginaActualLibro === paginasLibro.length - 1;
     document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('activo', i === paginaActualLibro));
+
+    const cuerpo = document.getElementById('pagina-cuerpo');
+    if (cuerpo) cuerpo.scrollTop = 0;
 }
 
 function cambiarPaginaLibro(dir) {
@@ -626,41 +630,80 @@ function cambiarPaginaLibro(dir) {
 }
 
 function toggleTapa() {
-    if (paginasLibro.length === 0) { mostrarToast('📖 No hay notas guardadas aún.', 'info'); return; }
-    tapaAbierta = !tapaAbierta;
+    // Evitar doble-click durante la animación (dura 850ms)
+    if (_animandoTapa) return;
+    if (paginasLibro.length === 0) {
+        mostrarToast('📖 No hay notas guardadas aún.', 'info');
+        return;
+    }
+ 
+    _animandoTapa = true;
+    tapaAbierta   = !tapaAbierta;
+ 
     const tapa      = document.getElementById('cuaderno-tapa');
     const paginas   = document.getElementById('cuaderno-paginas');
     const nav       = document.getElementById('libro-nav');
     const btnToggle = document.getElementById('btn-toggle-tapa');
-    tapa.classList.toggle('abierta', tapaAbierta);
-    btnToggle.textContent = tapaAbierta ? 'Cerrar cuaderno' : 'Abrir cuaderno';
-    btnToggle.classList.toggle('abierto', tapaAbierta);
+ 
     if (tapaAbierta) {
-        setTimeout(() => { paginas.classList.add('visible'); nav.classList.add('visible'); }, 380);
+        // ── ABRIR ──
+        tapa.classList.add('abierta');
+        btnToggle.textContent = 'Cerrar cuaderno';
+        btnToggle.classList.add('abierto');
+ 
+        // Las páginas y la nav aparecen después de que la tapa giró ~la mitad
+        setTimeout(() => {
+            paginas.classList.add('visible');
+        }, 420);
+        setTimeout(() => {
+            nav.classList.add('visible');
+        }, 520);
+ 
     } else {
+        // ── CERRAR ──
+        // Primero ocultar páginas y nav
         paginas.classList.remove('visible');
         nav.classList.remove('visible');
+ 
+        // Luego girar la tapa de vuelta
+        setTimeout(() => {
+            tapa.classList.remove('abierta');
+            btnToggle.textContent = 'Abrir cuaderno';
+            btnToggle.classList.remove('abierto');
+        }, 80);
     }
+ 
+    // Desbloquear después de la animación completa
+    setTimeout(() => { _animandoTapa = false; }, 950);
 }
+ 
 
 function abrirLibro() {
     const claves = Object.keys(localStorage).filter(k => k.startsWith('nota__'));
-    if (claves.length === 0) { mostrarToast('📖 El cuaderno está vacío. Guarda algunas notas primero.', 'info'); return; }
+    if (claves.length === 0) { mostrarToast('📖 El cuaderno está vacío. Guarda algunas notas primero.', 'info'); return; 
+    }
+
     paginasLibro = claves.map(clave => ({
         titulo:   clave.replace('nota__', ''),
         contenido: localStorage.getItem(clave)
     }));
     paginaActualLibro = 0;
     tapaAbierta       = false;
+    _animandoTapa     = false;
+
+    // Reset visualmente el estado de la tapa, páginas y nav
     const tapa      = document.getElementById('cuaderno-tapa');
     const paginas   = document.getElementById('cuaderno-paginas');
     const nav       = document.getElementById('libro-nav');
     const btnToggle = document.getElementById('btn-toggle-tapa');
+
     tapa.classList.remove('abierta');
     paginas.classList.remove('visible');
     nav.classList.remove('visible');
     btnToggle.textContent = 'Abrir cuaderno';
     btnToggle.classList.remove('abierto');
+
+    //Generar los puntos de navegación según el número de páginas
     const dotsContainer = document.getElementById('nav-dots');
     dotsContainer.innerHTML = '';
     paginasLibro.forEach((_, i) => {
@@ -670,19 +713,38 @@ function abrirLibro() {
         dot.onclick = () => { paginaActualLibro = i; renderPaginaLibro(); };
         dotsContainer.appendChild(dot);
     });
+
     generarEspiral();
     renderPaginaLibro();
+
+    //Mostrar y hacer scroll a la sección
     const seccion = document.getElementById('seccion-libro');
     seccion.style.display = 'block';
-    seccion.scrollIntoView({ behavior: 'smooth' });
+    seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function cerrarLibro() {
+    const seccion   = document.getElementById('seccion-libro');
+    const tapa      = document.getElementById('cuaderno-tapa');
+    const paginas   = document.getElementById('cuaderno-paginas');
+    const nav       = document.getElementById('libro-nav');
+    const btnToggle = document.getElementById('btn-toggle-tapa');
+ 
     if (tapaAbierta) {
-        toggleTapa();
-        setTimeout(() => { document.getElementById('seccion-libro').style.display = 'none'; }, 800);
+        // Cerrar animación primero, luego ocultar sección
+        paginas.classList.remove('visible');
+        nav.classList.remove('visible');
+        setTimeout(() => {
+            tapa.classList.remove('abierta');
+            btnToggle.textContent = 'Abrir cuaderno';
+            btnToggle.classList.remove('abierto');
+            tapaAbierta = false;
+        }, 80);
+        setTimeout(() => {
+            seccion.style.display = 'none';
+        }, 950);
     } else {
-        document.getElementById('seccion-libro').style.display = 'none';
+        seccion.style.display = 'none';
     }
 }
 

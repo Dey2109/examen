@@ -11,36 +11,29 @@
     <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- PDF.js para leer archivos PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- Mammoth.js para leer archivos DOCX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- ======= HEADER ======= -->
     <header class="header-global-cyber">
-    <div class="header-grid-cyber">
-        <!-- Sección del logotipo del sistema -->
-        <div class="brand-cyber">
-            <span class="icono-matriz">[🦂]</span>
-            <span class="texto-logo">INFRAMEN //--IN--</span>
-        </div>
-        
-        <!-- Línea decorativa central de conexión de datos -->
-        <div class="linea-conexion"></div>
-        
-        <!-- Estado de telemetría y terminal en tiempo real -->
-        <div class="status-cyber">
-            <span class="terminal-id">David Reyes</span>
-            <div class="indicador-red">
-                <span class="pulso-online"></span>
-                <span class="status-text">1-2 DS :D</span>
+        <div class="header-grid-cyber">
+            <div class="brand-cyber">
+                <span class="icono-matriz">[🦂]</span>
+                <span class="texto-logo">INFRAMEN //--IN--</span>
+            </div>
+            <div class="linea-conexion"></div>
+            <div class="status-cyber">
+                <span class="terminal-id">David Reyes</span>
+                <div class="indicador-red">
+                    <span class="pulso-online"></span>
+                    <span class="status-text">1-2 DS :D</span>
+                </div>
             </div>
         </div>
-    </div>
-</header>
-
+    </header>
 
     <!-- ======= CONTENEDOR PRINCIPAL ======= -->
     <div class="container">
@@ -64,18 +57,17 @@
             <button class="btn-borrar"   onclick="eliminarNota()">🗑 Borrar</button>
             <button class="btn-pdf"      onclick="generarPDF()">📄 PDF</button>
             <button class="btn-libro"    onclick="abrirLibro()">📖 Ver Libro</button>
-            <button class="btn-ingles"   onclick="toggleIngles()">🇬🇧 Guía Inglés</button>
-            <!-- Cargar archivo externo -->
             <button class="btn-upload"   onclick="document.getElementById('file-input-hidden').click()">📁 Cargar Archivo</button>
-            <!-- Copia de seguridad -->
             <button class="btn-backup"   onclick="exportarNotas()">⬇ Exportar notas</button>
             <button class="btn-restore"  onclick="document.getElementById('restore-input-hidden').click()">⬆ Importar notas</button>
             <a href="cuestionario/index.html">
-                <button class="btn-cuestionario" style="background-color: #2a2520; color: white;">❓ Cuestionario</button>
+                <button class="btn-cuestionario">❓ Cuestionario</button>
             </a>
+            <button class="btn-nueva"    onclick="nuevaHoja()">✨ Nueva hoja</button>
+            <button class="btn-stats"    onclick="abrirEstadisticas()">📊 Estadísticas</button>
         </div>
 
-        <!-- Input file oculto — acepta PDF, DOCX, imágenes y texto -->
+        <!-- Inputs ocultos -->
         <input
             type="file"
             id="file-input-hidden"
@@ -83,7 +75,6 @@
             accept=".pdf,.docx,.doc,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg"
             onchange="manejarArchivoSubido(this)"
         >
-        <!-- Input oculto para restaurar backup JSON -->
         <input
             type="file"
             id="restore-input-hidden"
@@ -92,102 +83,25 @@
             onchange="importarNotas(this)"
         >
 
-        <!-- Indicador de autoguardado -->
-        <div id="indicador-autoguardado" class="indicador-autoguardado"></div>
+        <!-- Indicadores -->
+        <div class="barra-estado">
+            <div id="indicador-autoguardado" class="indicador-autoguardado"></div>
+            <div id="contador-palabras" class="contador-palabras">0 palabras</div>
+        </div>
 
         <!-- Editor CKEditor -->
         <textarea id="editor"></textarea>
-
-        <!-- ======= SECCIÓN: GUÍA DE INGLÉS ======= -->
-        <div class="seccion-ingles" id="seccion-ingles">
-            <h2>📝 Unit 1: The Verb "To Be" (Ser o Estar)</h2>
-            <p>Guía de estudio interactiva — Sección 1-2 Desarrollo de Software</p>
-
-            <div class="menu-ingles-tabs">
-                <button class="tab-btn active" onclick="cambiarTab(event,'tab-presente')">Presente (Am/Is/Are)</button>
-                <button class="tab-btn"        onclick="cambiarTab(event,'tab-pasado')">Pasado (Was/Were)</button>
-                <button class="tab-btn"        onclick="cambiarTab(event,'tab-futuro')">Futuro (Will be)</button>
-                <button class="tab-btn"        onclick="cambiarTab(event,'tab-ejercicios')">✏️ Ejercicios</button>
-            </div>
-
-            <!-- Pestaña: Presente -->
-            <div id="tab-presente" class="contenido-tab active">
-                <h3>Tiempo Presente: AM, IS, ARE</h3>
-                <table class="tabla-gramatica">
-                    <thead>
-                        <tr><th>Singular</th><th>Traducción</th><th>Plural</th><th>Traducción</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>I am</td><td>Yo soy / estoy</td><td>We are</td><td>Nosotros somos / estamos</td></tr>
-                        <tr><td>You are</td><td>Tú eres / estás</td><td>You are</td><td>Uds. son / están</td></tr>
-                        <tr><td>He / She / It is</td><td>Él / Ella es / está</td><td>They are</td><td>Ellos son / están</td></tr>
-                    </tbody>
-                </table>
-                <p><strong>Negativo:</strong> Se añade <code>not</code> → <em>isn't / aren't</em></p>
-                <p><strong>Interrogativo:</strong> Se invierte el orden → <em>Am I? / Are you? / Is he?</em></p>
-            </div>
-
-            <!-- Pestaña: Pasado -->
-            <div id="tab-pasado" class="contenido-tab">
-                <h3>Tiempo Pasado: WAS, WERE</h3>
-                <table class="tabla-gramatica">
-                    <thead>
-                        <tr><th>WAS (I, He, She, It)</th><th>WERE (You, We, They)</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>I was — <em>Yo era / estaba</em></td><td>We were — <em>Nosotros éramos</em></td></tr>
-                        <tr><td>He/She/It was — <em>Él/Ella era</em></td><td>They were — <em>Ellos eran</em></td></tr>
-                    </tbody>
-                </table>
-                <p><strong>Negativo:</strong> <code>wasn't</code> o <code>weren't</code></p>
-                <p><strong>Interrogativo:</strong> <em>Was I? / Were you?</em></p>
-            </div>
-
-            <!-- Pestaña: Futuro -->
-            <div id="tab-futuro" class="contenido-tab">
-                <h3>Tiempo Futuro: WILL BE</h3>
-                <p>Para todos los pronombres se usa <code>will be</code> o su contracción <code>'ll be</code>.</p>
-                <ul>
-                    <li><strong>I will be / I'll be</strong> — Yo seré / estaré</li>
-                    <li><strong>You will be</strong> — Tú serás / estarás</li>
-                    <li><strong>It will be hot tomorrow</strong> — Estará caluroso mañana</li>
-                </ul>
-                <p><strong>Negativo:</strong> <code>won't be</code> (will not be)</p>
-            </div>
-
-            <!-- Pestaña: Ejercicios -->
-            <div id="tab-ejercicios" class="contenido-tab">
-                <h3>✏️ Práctica Interactiva</h3>
-                <p>Completa con la forma correcta del verbo To Be:</p>
-                <div class="ejercicio-item">
-                    <label>1. The teacher <input type="text" id="ex1" placeholder="am/is/are"> in the classroom now.</label>
-                </div>
-                <div class="ejercicio-item">
-                    <label>2. John and Mary <input type="text" id="ex2" placeholder="am/is/are"> good friends.</label>
-                </div>
-                <div class="ejercicio-item">
-                    <label>3. The men <input type="text" id="ex3" placeholder="am/is/are"> tired.</label>
-                </div>
-                <div class="ejercicio-item">
-                    <label>4. Yesterday <input type="text" id="ex4" placeholder="was/were"> Sunday.</label>
-                </div>
-                <div class="ejercicio-item">
-                    <label>5. He is not here today, but he <input type="text" id="ex5" placeholder="will be / was"> here tomorrow.</label>
-                </div>
-                <br>
-                <button onclick="verificarRespuestas()" style="background:#00ff7f;color:#111;border:none;padding:9px 20px;border-radius:5px;font-weight:700;cursor:pointer;font-size:0.85rem;">
-                    ✅ Verificar respuestas
-                </button>
-            </div>
-
-            <br>
-            <button class="btn-cerrar" onclick="toggleIngles()">✕ Cerrar guía</button>
-        </div>
 
         <!-- ======= SECCIÓN: LIBRO ESPIRAL ======= -->
         <div class="seccion-libro" id="seccion-libro">
             <h3>📖 Vista de Libro</h3>
             <p class="libro-subtitulo">Haz clic en la portada para abrir el cuaderno</p>
+
+            <!-- Búsqueda en el libro -->
+            <div class="libro-search-bar" id="libro-search-bar">
+                <input type="text" id="libro-search-input" placeholder="🔍 Buscar nota..." oninput="filtrarNotasLibro(this.value)">
+                <span id="libro-search-count"></span>
+            </div>
 
             <div class="cuaderno-escena">
                 <div class="cuaderno-cuerpo" id="cuaderno-cuerpo">
@@ -204,13 +118,7 @@
                         <div class="pagina-numero" id="pagina-numero">1</div>
                     </div>
 
-                    <!-- Espiral SVG -->
-                    <svg class="cuaderno-espiral" id="espiral-svg"
-                         viewBox="0 0 28 560" preserveAspectRatio="none"
-                         xmlns="http://www.w3.org/2000/svg">
-                    </svg>
-
-                    <!-- Tapa delantera -->
+                    <!-- Tapa delantera — debe ir DESPUÉS del SVG para estar encima en DOM -->
                     <div class="cuaderno-tapa-front" id="cuaderno-tapa" onclick="toggleTapa()">
                         <div class="tapa-lomo"></div>
                         <div class="tapa-linea"></div>
@@ -219,6 +127,21 @@
                         <div class="tapa-linea"></div>
                         <div class="tapa-subtitulo">1-2 · Desarrollo de Software</div>
                         <div class="tapa-hint">— clic para abrir —</div>
+                    </div>
+
+                    <!-- Espiral SVG — SIEMPRE al final para estar visualmente encima
+                         pero con pointer-events:none para no bloquear clicks a la tapa -->
+                    <svg class="cuaderno-espiral" id="espiral-svg"
+                         viewBox="0 0 28 560" preserveAspectRatio="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                    </svg>
+
+                    <!-- Overlay invisible: captura clicks cuando la tapa está cerrada
+                         y los propaga a la tapa. Cubre solo la zona del lomo/espiral. -->
+                    <div id="tapa-click-overlay" onclick="manejarClickEscena(event)"
+                         style="position:absolute;inset:0;z-index:25;
+                                background:transparent;cursor:pointer;
+                                pointer-events:auto;">
                     </div>
 
                 </div>
@@ -232,8 +155,9 @@
                 <button class="nav-btn" id="btn-next" onclick="cambiarPaginaLibro(1)">&#8594;</button>
             </div>
 
-            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <div class="libro-acciones">
                 <button class="btn-toggle-cuaderno" id="btn-toggle-tapa" onclick="toggleTapa()">Abrir cuaderno</button>
+                <button class="btn-editar-pagina" onclick="editarPaginaActual()">✏️ Editar esta página</button>
                 <button class="btn-cerrar" onclick="cerrarLibro()">✕ Cerrar sección</button>
             </div>
         </div>
@@ -244,12 +168,15 @@
     <div class="modal-overlay" id="modal-notas" onclick="cerrarModalSiFondo(event)">
         <div class="modal-box">
             <h3>📋 Notas guardadas</h3>
+            <div class="modal-search">
+                <input type="text" id="modal-search-input" placeholder="🔍 Filtrar notas..." oninput="filtrarModalNotas(this.value)">
+            </div>
             <div class="lista-notas" id="lista-notas-contenido"></div>
             <button class="btn-cerrar" onclick="cerrarModalNotas()">✕ Cerrar</button>
         </div>
     </div>
 
-    <!-- ======= MODAL: PREVISUALIZACIÓN DE ARCHIVO SUBIDO ======= -->
+    <!-- ======= MODAL: PREVISUALIZACIÓN DE ARCHIVO ======= -->
     <div class="modal-overlay" id="modal-archivo" onclick="cerrarModalArchivSiFondo(event)">
         <div class="modal-box modal-archivo-box">
             <div class="modal-archivo-header">
@@ -259,18 +186,11 @@
                     <p id="modal-archivo-tipo" style="font-size:0.78rem; color:var(--texto-muted); margin-top:2px;"></p>
                 </div>
             </div>
-
-            <!-- Campo título editable -->
             <div class="modal-archivo-campo">
                 <label for="modal-titulo-input">Título de la hoja</label>
                 <input type="text" id="modal-titulo-input" placeholder="Escribe el título para esta nota...">
             </div>
-
-            <!-- Previsualización -->
-            <div class="modal-archivo-preview" id="modal-archivo-preview">
-                <!-- Se rellena dinámicamente -->
-            </div>
-
+            <div class="modal-archivo-preview" id="modal-archivo-preview"></div>
             <div class="modal-archivo-footer">
                 <button class="btn-cerrar" onclick="cerrarModalArchivo()">✕ Cancelar</button>
                 <button class="btn-guardar-archivo" id="btn-insertar-archivo" onclick="insertarArchivoEnEditor()">
@@ -280,8 +200,18 @@
         </div>
     </div>
 
+    <!-- ======= MODAL: ESTADÍSTICAS ======= -->
+    <div class="modal-overlay" id="modal-stats" onclick="if(event.target===this)cerrarEstadisticas()">
+        <div class="modal-box modal-stats-box">
+            <h3>📊 Estadísticas del Cuaderno</h3>
+            <div id="stats-contenido" class="stats-grid"></div>
+            <button class="btn-cerrar" onclick="cerrarEstadisticas()">✕ Cerrar</button>
+        </div>
+    </div>
+
     <!-- ======= TOAST CONTAINER ======= -->
     <div id="toast-container"></div>
+
     <script src="script.js"></script>
 </body>
 </html>

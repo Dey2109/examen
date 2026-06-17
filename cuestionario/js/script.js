@@ -1,29 +1,55 @@
-    /* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
        CUESTIONARIO — Lógica de arrastre
        Se arrastran los CHIPS (opciones) hacia la ZONA de respuesta.
-
-       Bugs corregidos respecto a versiones anteriores:
-       1. dragover en zona llena: ahora sólo bloquea si la opción
-          arrastrada NO viene ya de esa misma zona (permite re-drag).
-       2. Cálculo del bloque origen: se usa origenBloque guardado en
-          dragstart para no perder la referencia cuando el nodo ya fue
-          movido al DOM de la zona.
-       3. data-correcta="Jupiter" vs data-valor="Júpiter" corregido
-          (ahora ambos usan "Júpiter").
-       4. Placeholder text: se usa la clase CSS .vacia en lugar de
-          :empty::after (que falla porque <span> siempre está dentro).
-       5. Bloques anidados incorrectamente en el HTML original: todos
-          los .bloque son ahora hermanos directos de .notebook-page.
     ═══════════════════════════════════════════════════════════ */
 
     let chipArrastrado  = null;   // .opcion que se mueve
     let origenBloque    = null;   // .bloque de donde vino el chip
     let origenEsZona    = false;  // true si venía de una zona-respuesta
 
-    /* ── Inicializar todos los chips ── */
-    document.querySelectorAll('.opcion').forEach(activarChip);
+    // ── CONTROL DE PERSISTENCIA Y BLOQUEO AL CARGAR LA PÁGINA ──
+    document.addEventListener("DOMContentLoaded", () => {
+        const formularioRespondido = localStorage.getItem("formularioEnviado");
+        
+        if (formularioRespondido === "true") {
+            // 1. Recuperar respuestas guardadas y colocarlas en sus zonas
+            const respuestasGuardadas = JSON.parse(localStorage.getItem("respuestasUsuario") || "{}");
+            
+            document.querySelectorAll('.bloque').forEach((bloque, index) => {
+                const valorGuardado = respuestasGuardadas[index];
+                if (valorGuardado) {
+                    const pool = bloque.querySelector('.opciones-pool');
+                    const zona = bloque.querySelector('.zona-respuesta');
+                    const chip = pool.querySelector(`.opcion[data-valor="${valorGuardado}"]`);
+                    
+                    if (chip) {
+                        const feedback = zona.querySelector('.zona-feedback');
+                        zona.insertBefore(chip, feedback);
+                        zona.classList.remove('vacia');
+                    }
+                }
+            });
+
+            // 2. Ejecutar la calificación para mostrar los aciertos/errores visuales
+            calcularNota(true); // Pasamos true para indicar que es una carga de bloqueo
+
+            // 3. Desactivar el botón de calificar si tienes uno en tu HTML
+            const botonCalificar = document.querySelector('button[onclick="calcularNota()"]');
+            if (botonCalificar) {
+                botonCalificar.disabled = true;
+                botonCalificar.textContent = "Cuestionario ya respondido";
+            }
+        } else {
+            // Si no ha respondido, activar el arrastre normalmente
+            document.querySelectorAll('.opcion').forEach(activarChip);
+            inicializarZonasYPools();
+        }
+    });
 
     function activarChip(chip) {
+        // Hacer el elemento arrastrable explícitamente
+        chip.setAttribute('draggable', 'true');
+
         chip.addEventListener('dragstart', e => {
             chipArrastrado = chip;
             origenBloque   = chip.closest('.bloque');
@@ -31,7 +57,6 @@
 
             chip.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            /* Necesario en Firefox para que el drag funcione */
             e.dataTransfer.setData('text/plain', chip.dataset.valor);
         });
 
@@ -40,131 +65,110 @@
             chipArrastrado = null;
             origenBloque   = null;
             origenEsZona   = false;
-            /* Limpiar resaltados de hover que puedan haber quedado */
             document.querySelectorAll('.drop-over, .pool-over')
                     .forEach(el => el.classList.remove('drop-over', 'pool-over'));
         });
     }
 
-    /* ── Zonas de respuesta como drop targets ── */
-    document.querySelectorAll('.zona-respuesta').forEach(zona => {
+    function inicializarZonasYPools() {
+        /* ── Zonas de respuesta como drop targets ── */
+        document.querySelectorAll('.zona-respuesta').forEach(zona => {
+            zona.addEventListener('dragover', e => {
+                if (!chipArrastrado) return;
+                const chipActual = zona.querySelector('.opcion');
+                if (chipActual && chipActual !== chipArrastrado) return;
 
-        zona.addEventListener('dragover', e => {
-            if (!chipArrastrado) return;
-            const chipActual = zona.querySelector('.opcion');
+                e.preventDefault();
+                zona.classList.add('drop-over');
+            });
 
-            /*
-              Permitir drop si:
-              a) la zona está vacía, o
-              b) el chip que hay dentro ES el que estamos arrastrando
-                 (re-drag desde la misma zona).
-              Bloquear si la zona ya tiene un chip diferente al arrastrado.
-            */
-            if (chipActual && chipActual !== chipArrastrado) return;
-
-            e.preventDefault();
-            zona.classList.add('drop-over');
-        });
-
-        zona.addEventListener('dragleave', e => {
-            /* Solo quitar el resaltado si salimos completamente del elemento */
-            if (!zona.contains(e.relatedTarget)) {
-                zona.classList.remove('drop-over');
-            }
-        });
-
-        zona.addEventListener('drop', e => {
-            e.preventDefault();
-            zona.classList.remove('drop-over');
-            if (!chipArrastrado) return;
-
-            /* Si hay otro chip diferente en la zona, devolverlo al pool */
-            const chipActual = zona.querySelector('.opcion');
-            if (chipActual && chipActual !== chipArrastrado) {
-                const poolDestino = zona.closest('.bloque').querySelector('.opciones-pool');
-                poolDestino.appendChild(chipActual);
-                /* Re-activar el chip devuelto (no pierde el listener, pero
-                   por claridad lo mantenemos; los listeners ya están fijados) */
-            }
-
-            /* Insertar el chip arrastrado antes del span de feedback */
-            const feedback = zona.querySelector('.zona-feedback');
-            zona.insertBefore(chipArrastrado, feedback);
-
-            /* Quitar placeholder y limpiar estado de corrección */
-            zona.classList.remove('vacia', 'correcta', 'incorrecta');
-        });
-    });
-
-    /* ── Pools como drop targets (devolver chips) ── */
-    document.querySelectorAll('.opciones-pool').forEach(pool => {
-
-        pool.addEventListener('dragover', e => {
-            if (!chipArrastrado) return;
-            /*
-              Solo aceptar chips cuyo bloque origen sea ESTE bloque.
-              Usar origenBloque (guardado en dragstart) para no perder
-              la referencia cuando el chip ya está en el DOM de la zona.
-            */
-            if (origenBloque !== pool.closest('.bloque')) return;
-
-            e.preventDefault();
-            pool.classList.add('pool-over');
-        });
-
-        pool.addEventListener('dragleave', e => {
-            if (!pool.contains(e.relatedTarget)) {
-                pool.classList.remove('pool-over');
-            }
-        });
-
-        pool.addEventListener('drop', e => {
-            e.preventDefault();
-            pool.classList.remove('pool-over');
-            if (!chipArrastrado) return;
-            if (origenBloque !== pool.closest('.bloque')) return;
-
-            pool.appendChild(chipArrastrado);
-
-            /* Si venía de una zona, marcarla como vacía de nuevo */
-            if (origenEsZona) {
-                const zonaAnterior = chipArrastrado.parentElement;
-                /* En el momento del drop el chip YA fue movido al pool,
-                   así que buscamos la zona del bloque origen */
-                const zona = origenBloque.querySelector('.zona-respuesta');
-                if (!zona.querySelector('.opcion')) {
-                    zona.classList.add('vacia');
-                    zona.classList.remove('correcta', 'incorrecta');
+            zona.addEventListener('dragleave', e => {
+                if (!zona.contains(e.relatedTarget)) {
+                    zona.classList.remove('drop-over');
                 }
-            }
+            });
+
+            zona.addEventListener('drop', e => {
+                e.preventDefault();
+                zona.classList.remove('drop-over');
+                if (!chipArrastrado) return;
+
+                const chipActual = zona.querySelector('.opcion');
+                if (chipActual && chipActual !== chipArrastrado) {
+                    const poolDestino = zona.closest('.bloque').querySelector('.opciones-pool');
+                    poolDestino.appendChild(chipActual);
+                }
+
+                const feedback = zona.querySelector('.zona-feedback');
+                zona.insertBefore(chipArrastrado, feedback);
+                zona.classList.remove('vacia', 'correcta', 'incorrecta');
+            });
         });
-    });
+
+        /* ── Pools como drop targets (devolver chips) ── */
+        document.querySelectorAll('.opciones-pool').forEach(pool => {
+            pool.addEventListener('dragover', e => {
+                if (!chipArrastrado) return;
+                if (origenBloque !== pool.closest('.bloque')) return;
+
+                e.preventDefault();
+                pool.classList.add('pool-over');
+            });
+
+            pool.addEventListener('dragleave', e => {
+                if (!pool.contains(e.relatedTarget)) {
+                    pool.classList.remove('pool-over');
+                }
+            });
+
+            pool.addEventListener('drop', e => {
+                e.preventDefault();
+                pool.classList.remove('pool-over');
+                if (!chipArrastrado) return;
+                if (origenBloque !== pool.closest('.bloque')) return;
+
+                pool.appendChild(chipArrastrado);
+
+                if (origenEsZona) {
+                    const zona = origenBloque.querySelector('.zona-respuesta');
+                    if (!zona.querySelector('.opcion')) {
+                        zona.classList.add('vacia');
+                        zona.classList.remove('correcta', 'incorrecta');
+                    }
+                }
+            });
+        });
+    }
 
     /* ── Calificar ── */
-    function calcularNota() {
+    function calcularNota(esCargaBloqueo = false) {
         const bloques = document.querySelectorAll('.bloque');
         let correctas  = 0;
         let respondidas = 0;
         const total    = bloques.length;
+        
+        // Objeto para almacenar temporalmente qué chip movió a qué bloque
+        const respuestasParaGuardar = {};
 
-        bloques.forEach(bloque => {
+        bloques.forEach((bloque, index) => {
             const respuestaCorrecta = bloque.dataset.correcta;
             const zona  = bloque.querySelector('.zona-respuesta');
             const chip  = zona.querySelector('.opcion');
 
-            /* Limpiar estado visual anterior */
             zona.classList.remove('correcta', 'incorrecta');
             const fb = zona.querySelector('.zona-feedback');
             fb.textContent = '';
 
             if (!chip) {
-                /* Sin respuesta: marcar zona como vacía */
                 zona.classList.add('vacia');
                 return;
             }
 
             respondidas++;
             zona.classList.remove('vacia');
+            
+            // Registrar el valor seleccionado por el usuario en esta posición
+            respuestasParaGuardar[index] = chip.dataset.valor;
 
             if (chip.dataset.valor === respuestaCorrecta) {
                 zona.classList.add('correcta');
@@ -173,6 +177,12 @@
             } else {
                 zona.classList.add('incorrecta');
                 fb.textContent = '✗';
+            }
+
+            // Si ya está bloqueado, quitar la propiedad de arrastrar a los chips
+            if (esCargaBloqueo || !esCargaBloqueo) {
+                chip.removeAttribute('draggable');
+                chip.style.cursor = 'default';
             }
         });
 
@@ -192,6 +202,19 @@
         let detalle = `${porcentaje}% de acierto`;
         if (sinRespuesta > 0) detalle += `  ·  ${sinRespuesta} pregunta(s) sin responder`;
         document.getElementById('resultado-detalle').textContent = detalle;
+
+        // GUARDAR ESTADO SÓLO SI ES LA PRIMERA VEZ QUE CALIFICA (Presionó el botón)
+        if (!esCargaBloqueo) {
+            localStorage.setItem("formularioEnviado", "true");
+            localStorage.setItem("respuestasUsuario", JSON.stringify(respuestasParaGuardar));
+            
+            // Opcional: Desactivar el botón inmediatamente tras el primer click
+            const botonCalificar = document.querySelector('button[onclick="calcularNota()"]');
+            if (botonCalificar) {
+                botonCalificar.disabled = true;
+                botonCalificar.textContent = "Cuestionario respondido";
+            }
+        }
 
         document.getElementById('resultado')
                 .scrollIntoView({ behavior: 'smooth', block: 'center' });

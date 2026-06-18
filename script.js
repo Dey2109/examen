@@ -1226,13 +1226,3 @@ function importarNotas(inputEl) {
     };
     reader.readAsText(archivo);
 }
-
-/* ============================================================
-   ATAJO DE TECLADO RÁPIDO: Ctrl+S = Guardar
-   ============================================================ */
-document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        guardarNota();
-    }
-});
